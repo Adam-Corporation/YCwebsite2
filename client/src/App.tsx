@@ -5,30 +5,25 @@ import { Toaster } from "@/components/ui/toaster";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
 import EntryScreen from "./components/entry-screen";
-import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect, useRef } from "react";
 import "./styles/LoadingScreen.css";
 
-// Simplified loading screen component
-const LoadingScreen = ({ progress = 0 }) => {
-  return (
-    <div className="loading-screen">
-      <div className="loading-container">
-        <div className="loading-strip">
-          <div 
-            className="loading-progress"
-            style={{ width: `${progress}%` }}
-          />
-        </div>
-        <div className="loading-info">
-          <span className="loading-text">Loading</span>
-          <span className="loading-percentage">{Math.round(progress)}%</span>
-        </div>
+// Loading screen UI
+const LoadingScreen = ({ progress = 0 }) => (
+  <div className="loading-screen">
+    <div className="loading-container">
+      <div className="loading-strip">
+        <div className="loading-progress" style={{ width: `${progress}%` }} />
+      </div>
+      <div className="loading-info">
+        <span className="loading-text">Loading</span>
+        <span className="loading-percentage">{Math.round(progress)}%</span>
       </div>
     </div>
-  );
-};
+  </div>
+);
 
+// Routing
 function AppRouter() {
   return (
     <Switch>
@@ -40,172 +35,100 @@ function AppRouter() {
 
 function App() {
   const [entryMode, setEntryMode] = useState(true);
-  const [isLoading, setIsLoading] = useState(false);
   const [progress, setProgress] = useState(0);
-  const assetsLoaded = useRef(false);
+  const [showLoading, setShowLoading] = useState(false);
   const [homeReady, setHomeReady] = useState(false);
   const progressInterval = useRef<NodeJS.Timeout>();
-  const [showLoading, setShowLoading] = useState(false);
-  
-  // Check if all assets are loaded
+
+  // Check if all assets are fully loaded
   const checkAssetsLoaded = () => {
-    // Check if all images are loaded
     const images = document.images;
-    let allImagesLoaded = true;
-    
-    for (let i = 0; i < images.length; i++) {
-      if (!images[i].complete) {
-        allImagesLoaded = false;
-        break;
-      }
-    }
-    
-    // Check if all videos are loaded
-    const videos = document.querySelectorAll('video');
-    let allVideosLoaded = true;
-    
-    videos.forEach(video => {
-      if (video.readyState < 3) { // 3 = HAVE_FUTURE_DATA
-        allVideosLoaded = false;
-      }
-    });
-    
-    // Check if fonts are loaded
-    const allFontsLoaded = document.fonts ? document.fonts.status === 'loaded' : true;
-    
-    return allImagesLoaded && allVideosLoaded && allFontsLoaded;
+    const allImagesLoaded = Array.from(images).every(img => img.complete);
+    const videos = Array.from(document.querySelectorAll("video"));
+    const allVideosLoaded = videos.every(v => v.readyState >= 3); // 3 = HAVE_FUTURE_DATA
+    const fontsLoaded = document.fonts?.status === "loaded";
+
+    return allImagesLoaded && allVideosLoaded && fontsLoaded;
   };
-  
-  // Handle asset loading when home is ready to be shown
+
+  // Entry exit → load screen
   useEffect(() => {
-    console.log('Effect triggered with entryMode:', entryMode, 'homeReady:', homeReady, 'isLoading:', isLoading);
-    
-    // Only run this effect when home is ready to be shown (after entry screen)
     if (!entryMode && !homeReady) {
-      console.log('Starting loading sequence...');
-      setIsLoading(true);
-      setProgress(0);
       setShowLoading(true);
-      
-      const checkAndHandleAssets = () => {
-        const areAssetsLoaded = checkAssetsLoaded();
-        console.log('Checking if assets are loaded:', areAssetsLoaded);
-        
-        if (areAssetsLoaded) {
-          // Clear any existing interval
-          if (progressInterval.current) {
-            clearInterval(progressInterval.current);
-            progressInterval.current = undefined;
-          }
-          
-          // Set progress to 100%
+      setProgress(0);
+
+      const checkAndFinish = () => {
+        if (checkAssetsLoaded()) {
+          clearInterval(progressInterval.current!);
           setProgress(100);
-          
-          // After a short delay, hide the loading screen
           setTimeout(() => {
-            console.log('All assets loaded, hiding loading screen');
             setShowLoading(false);
-            setIsLoading(false);
             setHomeReady(true);
-          }, 500);
-          
+          }, 400);
           return true;
         }
         return false;
       };
-      
-      // Initial check - if assets are already loaded
-      if (checkAndHandleAssets()) {
-        return;
-      }
-      
-      // Start progress animation
+
+      // Instant check
+      if (checkAndFinish()) return;
+
+      // Simulate loading progress
       progressInterval.current = setInterval(() => {
         setProgress(prev => {
-          // Slow down as we approach 100%
-          const increment = prev < 50 ? 5 : prev < 80 ? 2 : 1;
-          const newProgress = Math.min(prev + increment, 100);
-          console.log('Progress:', newProgress);
-          
-          // Check if assets are loaded as we progress
-          if (newProgress >= 80) {
-            checkAndHandleAssets();
-          }
-          
-          return newProgress;
+          const step = prev < 60 ? 5 : prev < 90 ? 2 : 1;
+          const next = Math.min(prev + step, 99);
+          checkAndFinish();
+          return next;
         });
       }, 100);
-      
-      // Set up event listeners for assets
-      const handleLoad = () => {
-        checkAndHandleAssets();
-      };
-      
-      // Add event listeners
-      window.addEventListener('load', handleLoad);
-      window.addEventListener('DOMContentLoaded', handleLoad);
-      
-      // Fallback in case assets take too long to load
-      const loadingTimeout = setTimeout(() => {
-        console.log('Fallback: Loading timeout reached, forcing completion');
-        if (progressInterval.current) {
-          clearInterval(progressInterval.current);
-          progressInterval.current = undefined;
-        }
+
+      // Fallback timeout
+      const timeout = setTimeout(() => {
+        clearInterval(progressInterval.current!);
         setProgress(100);
         setTimeout(() => {
           setShowLoading(false);
-          setIsLoading(false);
           setHomeReady(true);
-        }, 300);
-      }, 10000); // 10 second timeout as fallback
-      
-      // Cleanup function
+        }, 400);
+      }, 12000);
+
+      // Cleanup
       return () => {
-        if (progressInterval.current) {
-          clearInterval(progressInterval.current);
-          progressInterval.current = undefined;
-        }
-        clearTimeout(loadingTimeout);
-        window.removeEventListener('load', handleLoad);
-        window.removeEventListener('DOMContentLoaded', handleLoad);
+        clearInterval(progressInterval.current!);
+        clearTimeout(timeout);
       };
     }
   }, [entryMode, homeReady]);
 
+  // Entry screen toggle
   const toggleEntryMode = () => {
-    console.log('Toggle entry mode called, showing loading screen');
-    setShowLoading(true);
     setEntryMode(false);
-    setIsLoading(true);
+    setShowLoading(true);
     setProgress(0);
   };
 
-  console.log('Rendering with showLoading:', showLoading, 'progress:', progress);
-  
   return (
     <QueryClientProvider client={queryClient}>
       {entryMode ? (
-        <EntryScreen key="entry" toggleEntryMode={toggleEntryMode} />
+        <EntryScreen toggleEntryMode={toggleEntryMode} />
       ) : (
-        <div key="app" style={{ position: 'relative', minHeight: '100vh' }}>
+        <div style={{ position: "relative", minHeight: "100vh" }}>
           {showLoading && (
-            <div style={{
-              position: 'fixed',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              backgroundColor: '#000',
-              zIndex: 9999,
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              transition: 'opacity 0.5s ease-out',
-              opacity: showLoading ? 1 : 0,
-              pointerEvents: showLoading ? 'auto' : 'none'
-            }}>
+            <div
+              style={{
+                position: "fixed",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundColor: "#000",
+                zIndex: 9999,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
               <LoadingScreen progress={progress} />
             </div>
           )}
