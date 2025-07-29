@@ -8,7 +8,6 @@ import EntryScreen from "./components/entry-screen";
 import { useState, useEffect, useRef } from "react";
 import "./styles/LoadingScreen.css";
 
-// Define all critical videos upfront
 const CRITICAL_VIDEOS = [
   '/Videos/1-HelloWorldv2.mp4',
   '/Videos/2-MemoryTestv1.mp4',
@@ -60,27 +59,37 @@ function App() {
     const fontFamilies = new Set<string>();
     if (!document.fonts) return fontFamilies;
 
-    // Always include your custom font
+    // 1. Hardcode your known fonts
     fontFamilies.add('BoldOnse');
+    fontFamilies.add('Inter');
+    fontFamilies.add('Space Grotesk');
 
-    // Scan for other fonts
-    const styleSheets = Array.from(document.styleSheets);
-    styleSheets.forEach((sheet) => {
-      try {
-        if (sheet.cssRules) {
-          Array.from(sheet.cssRules).forEach((rule) => {
+    // 2. Safely scan accessible stylesheets
+    try {
+      const styleSheets = Array.from(document.styleSheets);
+      for (const sheet of styleSheets) {
+        try {
+          // Skip cross-origin sheets that would throw errors
+          if (sheet.href && !sheet.href.startsWith(window.location.origin)) {
+            continue;
+          }
+          
+          const rules = sheet.cssRules || [];
+          for (const rule of rules) {
             if (rule instanceof CSSFontFaceRule) {
               const fontFamily = rule.style.fontFamily;
               if (fontFamily) {
                 fontFamilies.add(fontFamily.replace(/["']/g, ''));
               }
             }
-          });
+          }
+        } catch (e) {
+          console.debug("Skipping stylesheet due to security policy");
         }
-      } catch (e) {
-        console.warn("Couldn't read stylesheet rules", e);
       }
-    });
+    } catch (e) {
+      console.warn("Font detection error:", e);
+    }
 
     return fontFamilies;
   };
@@ -98,22 +107,22 @@ function App() {
 
     // 1. Force load all critical videos
     CRITICAL_VIDEOS.forEach(videoPath => {
-      const normalizedPath = videoPath.trim();
-      assetsToLoad.current.add(`video:${normalizedPath}`);
+      const cleanPath = videoPath.trim();
+      assetsToLoad.current.add(`video:${cleanPath}`);
       
       const video = document.createElement('video');
-      video.src = normalizedPath;
+      video.src = cleanPath;
       video.preload = "auto";
-      video.load(); // Force start loading
+      video.load();
       
-      const handleVideoReady = () => {
-        handleAssetLoad('video', normalizedPath);
-        video.removeEventListener('canplaythrough', handleVideoReady);
-        video.removeEventListener('error', handleVideoReady);
+      const handleLoad = () => {
+        handleAssetLoad('video', cleanPath);
+        video.removeEventListener('canplaythrough', handleLoad);
+        video.removeEventListener('error', handleLoad);
       };
       
-      video.addEventListener('canplaythrough', handleVideoReady);
-      video.addEventListener('error', handleVideoReady);
+      video.addEventListener('canplaythrough', handleLoad);
+      video.addEventListener('error', handleLoad);
       
       document.body.appendChild(video);
       videoElements.push(video);
@@ -151,7 +160,6 @@ function App() {
     const actualProgress = total > 0 ? (loaded / total) * 100 : 100;
 
     setProgress(prev => {
-      // Smooth animation with actual progress as minimum
       const newProgress = Math.max(actualProgress, Math.min(prev + 2, 95));
       return newProgress;
     });
@@ -164,7 +172,6 @@ function App() {
   const completeLoading = () => {
     if (progressInterval.current) {
       clearInterval(progressInterval.current);
-      progressInterval.current = undefined;
     }
     setProgress(100);
     setTimeout(() => setShowLoading(false), 500);
@@ -172,7 +179,7 @@ function App() {
 
   useEffect(() => {
     if (!entryMode && showLoading) {
-      const cleanupVideoElements = trackAssets();
+      const cleanup = trackAssets();
 
       if (assetsToLoad.current.size === 0) {
         completeLoading();
@@ -180,10 +187,10 @@ function App() {
       }
 
       progressInterval.current = setInterval(updateProgress, 100);
-      const timeout = setTimeout(completeLoading, 20000); // 20s timeout
+      const timeout = setTimeout(completeLoading, 20000);
 
       return () => {
-        cleanupVideoElements();
+        cleanup();
         if (progressInterval.current) clearInterval(progressInterval.current);
         clearTimeout(timeout);
       };
