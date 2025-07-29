@@ -1,7 +1,9 @@
 @font-face {
     font-family: 'BoldOnse';
-    src: url('fonts/Boldonse-Regular.ttf') format('truetype');
-}
+    src: url('/fonts/Boldonse-Regular.ttf') format('truetype');
+    font-display: swap; /* Critical for loading behavior */
+    font-weight: 400; /* Explicitly define weight */
+  }
 .home-container {
     
     width: 100vw;
