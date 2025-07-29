@@ -1,0 +1,287 @@
+@font-face {
+    font-family: 'BoldOnse';
+    src: url('fonts/Boldonse-Regular.ttf') format('truetype');
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+}
+
+body {
+    background-color: #000;
+    color: #d9d9d9;
+    font-family: 'Righteous', sans-serif;
+    overflow-y: scroll;
+    scroll-snap-type: y mandatory;
+}
+
+h1 {
+    text-align: center;
+    font-size: 4rem;
+    margin: 2rem 0;
+    color: #d9d9d9;
+    font-family: 'BoldOnse', sans-serif;
+}
+
+.progress-map {
+    position: fixed;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 1000;
+}
+
+.progress-dot {
+    width: 12px;
+    height: 12px;
+    background-color: #d9d9d9;
+    border-radius: 50%;
+    margin: 10px 0;
+    cursor: pointer;
+    transition: transform 0.3s, background-color 0.3s;
+    animation: beat 2s infinite ease-in-out;
+}
+
+.progress-dot.active {
+    background-color: #fff;
+    transform: scale(1.5);
+    box-shadow: 0 0 10px #fff;
+}
+
+.progress-line {
+    position: absolute;
+    right: 5.5px;
+    top: 0;
+    width: 1px;
+    background-color: #d9d9d9;
+    height: 0;
+    transition: height 0.3s;
+    z-index: -1;
+}
+
+.video-section {
+    position: relative;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    scroll-snap-align: start;
+    background-color: #000;
+}
+
+.text-overlay-fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.85);
+    z-index: 100;
+    display: flex;
+    align-items: flex-start; /* Align content to the top */
+    justify-content: center;
+    transform: translateX(100%);
+    transition: transform 0.8s ease-in-out;
+    padding: 10vh 5% 5%; /* Add top padding to push content down */
+    box-sizing: border-box; /* Ensure padding is included in height calculation */
+}
+
+.text-overlay-fullscreen.active {
+    transform: translateX(0);
+}
+
+/* This class is added by JS just for measuring, then removed. */
+.text-overlay-fullscreen.measure {
+    transform: translateX(0);
+    opacity: 0;
+    pointer-events: none;
+    z-index: -1; /* Ensure it's out of the way */
+}
+
+.overlay-content {
+    position: relative;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 40px;
+    border-radius: 15px;
+    max-width: 60%;
+    color: #d9d9d9;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.text-anim-wrapper {
+    position: relative; /* This is critical for positioning the SVG */
+    width: 100%;
+}
+
+.scanning-underline-svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none; /* Allows clicking through the SVG to the text */
+    overflow: visible;
+}
+
+.scanning-underline-svg path {
+    fill: none;
+    stroke: #d9d9d9;
+    stroke-width: 2px;
+    stroke-linecap: round;
+    /* Animation will be set by JS, but prepare the initial state */
+    stroke-dashoffset: 1; /* Set to a non-zero value to be animated */
+}
+
+@keyframes draw-svg-line {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+.watch-video-btn {
+    background-color: #d9d9d9;
+    color: #000;
+    border: none;
+    padding: 15px 30px;
+    font-family: 'BoldOnse', sans-serif;
+    font-size: 1.1rem;
+    cursor: pointer;
+    margin-top: 30px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.watch-video-btn:hover {
+    background-color: #fff;
+    color: #000;
+}
+
+.video-container {
+    width: 70%;
+    margin: 0 auto;
+    position: relative;
+    transition: width 0.5s ease-in-out;
+}
+
+.video-container.expanded .video-wrapper {
+    transform: scale(1.1);
+    box-shadow: 0 0 25px #d9d9d9, 0 0 50px #d9d9d9;
+}
+
+.title-container {
+    text-align: center;
+    margin-bottom: 2rem;
+    position: relative;
+    z-index: 10;
+}
+
+.demo-title {
+    font-size: 2.5rem; /* Smaller title */
+    color: #d9d9d9;
+    margin-bottom: 1rem;
+    text-shadow: none; /* No glow on title */
+}
+
+.explanation-text {
+    font-size: 1.2rem;
+    color: #d9d9d9;
+    max-width: 800px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+.video-wrapper {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    max-height: 75vh;
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.8s cubic-bezier(0.25, 0.1, 0.25, 1), box-shadow 0.8s ease-in-out;
+}
+
+.video-section.active .video-wrapper {
+    /* transform: scale(1.05); */ /* Removed to improve video quality */
+    box-shadow: 0 0 15px #d9d9d9, 0 0 30px #d9d9d9;
+    animation: beat-glow 1.5s infinite ease-in-out;
+}
+
+.demo-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 12px;
+}
+
+
+@keyframes beat {
+    0% {
+        box-shadow: 0 0 15px #d9d9d9, 0 0 30px #d9d9d9;
+    }
+    50% {
+        box-shadow: 0 0 25px #d9d9d9, 0 0 50px #d9d9d9;
+    }
+    100% {
+        box-shadow: 0 0 15px #d9d9d9, 0 0 30px #d9d9d9;
+    }
+}
+
+
+
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .video-container {
+        padding: 2rem 1rem;
+        gap: 2rem;
+    }
+    
+    .demo-title {
+        font-size: 2rem;
+        letter-spacing: 2px;
+    }
+    
+    .text-overlay {
+        font-size: 1.1rem;
+        padding: 1.2rem;
+        max-width: 95%;
+        margin-top: -0.5rem;
+    }
+    
+    .demo-video {
+        width: 95%;
+        height: 50%;
+    }
+}
+
+@media (max-width: 480px) {
+    .video-container {
+        padding: 1.5rem 0.5rem;
+        gap: 1.5rem;
+    }
+    
+    .demo-title {
+        font-size: 1.5rem;
+        letter-spacing: 1px;
+    }
+    
+    .text-overlay {
+        font-size: 1rem;
+        padding: 1rem;
+        max-width: 98%;
+    }
+    
+    .demo-video {
+        width: 98%;
+        height: 45%;
+    }
+}

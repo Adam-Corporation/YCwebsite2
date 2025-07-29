@@ -1,0 +1,39 @@
+.progress-map-container {
+  position: fixed;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1000;
+}
+
+.progress-dots {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+@keyframes beat {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: #ccc;
+  cursor: pointer;
+  transition: transform 0.3s, background-color 0.3s;
+  animation: beat 2s infinite ease-in-out;
+}
+
+.dot.active {
+  background-color: #fff;
+  transform: scale(1.5);
+  box-shadow: 0 0 5px #fff, 0 0 10px #fff;
+  animation: none; /* Disable beat animation for the active dot */
+}

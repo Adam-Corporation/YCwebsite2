@@ -1,0 +1,38 @@
+@font-face {
+    font-family: 'BoldOnse';
+    src: url('fonts/Boldonse-Regular.ttf') format('truetype');
+}
+.home-container {
+    
+    width: 100vw;
+    overflow: hidden;
+    font-family: 'BoldOnse';
+    text-align: center;
+    height: 100vh;
+    line-height: 1.55;
+   
+     /* Prevents the container itself from scrolling */
+}
+
+.scroll-container {
+    height: 100vh;
+    overflow-y: scroll; /* This is our single, master scrollbar */
+    overflow-x: hidden; /* Prevent horizontal scrolling */
+    scroll-snap-type: y mandatory;
+    -webkit-overflow-scrolling: touch; /* for smooth scrolling on mobile */
+}
+
+.scroll-section {
+    height: 100vh;
+    width: 100vw;
+    scroll-snap-align: start;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+#footer {
+   font-family:  Geneva, Tahoma, sans-serif;
+    font-weight: bold;
+    
+}
