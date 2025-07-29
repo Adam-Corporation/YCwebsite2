@@ -1,21 +1,27 @@
+/* Loading Screen Container */
 .loading-screen {
   position: fixed;
-  inset: 0;
-  background-color: #000000;
-  z-index: 1000;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #000;
+  z-index: 9999;
   display: flex;
   align-items: center;
   justify-content: center;
   opacity: 1;
-  transition: opacity 0.5s ease-out;
+  transition: opacity 0.3s ease-out;
 }
 
 .loading-screen.fade-out {
   opacity: 0;
 }
 
+/* Loading Container */
 .loading-container {
   width: 300px;
+  padding: 20px;
   opacity: 1;
   transition: opacity 0.3s ease-in;
 }
@@ -24,23 +30,28 @@
   opacity: 0;
 }
 
+/* Loading Strip */
 .loading-strip {
   height: 2px;
   background-color: #1a1a1a;
   border-radius: 1px;
   overflow: hidden;
   position: relative;
-  margin-bottom: 8px;
+  margin: 10px 0;
 }
 
+/* Progress Bar */
 .loading-progress {
   height: 100%;
   background-color: #d9d9d9;
-  position: relative;
+  position: absolute;
+  top: 0;
+  left: 0;
   transition: width 0.3s ease-out;
   border-radius: 1px;
 }
 
+/* Shimmer Effect */
 .loading-progress::after {
   content: '';
   position: absolute;
@@ -58,6 +69,7 @@
   border-radius: 1px;
 }
 
+/* Shimmer Animation */
 @keyframes shimmer {
   0% {
     transform: translateX(-100%);
@@ -67,25 +79,29 @@
   }
 }
 
+/* Loading Info Container */
 .loading-info {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-top: 10px;
 }
 
+/* Percentage Text */
 .loading-percentage {
   color: #d9d9d9;
-  font-family: 'Roboto Mono', monospace;
+  font-family: monospace;
   font-size: 14px;
-  font-weight: 300;
-  letter-spacing: 0.5px;
+  font-weight: 400;
+  letter-spacing: 1px;
 }
 
+/* Loading Text */
 .loading-text {
   color: #d9d9d9;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 300;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 2px;
   opacity: 0.8;
 }
