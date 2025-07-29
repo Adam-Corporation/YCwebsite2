@@ -8,6 +8,18 @@ import EntryScreen from "./components/entry-screen";
 import { useState, useEffect, useRef } from "react";
 import "./styles/LoadingScreen.css";
 
+// Define all critical videos upfront
+const CRITICAL_VIDEOS = [
+  '/Videos/1-HelloWorldv2.mp4',
+  '/Videos/2-MemoryTestv1.mp4',
+  '/Videos/3-ChatGPTFinalVersion.mp4',
+  '/Videos/4-GoogleFormsTestv2.mp4',
+  '/Videos/5-SignInTest - Made with Clipchamp.mp4',
+  '/Videos/6-TweetTest - Made with Clipchamp.mp4',
+  '/Videos/7-GuiBasicTest - Made with Clipchamp.mp4',
+  '/Videos/8-TerminalBasicTest - Made with Clipchamp.mp4'
+];
+
 const LoadingScreen = ({ progress = 0 }) => {
   return (
     <div className="loading-screen">
@@ -48,6 +60,10 @@ function App() {
     const fontFamilies = new Set<string>();
     if (!document.fonts) return fontFamilies;
 
+    // Always include your custom font
+    fontFamilies.add('BoldOnse');
+
+    // Scan for other fonts
     const styleSheets = Array.from(document.styleSheets);
     styleSheets.forEach((sheet) => {
       try {
@@ -78,7 +94,32 @@ function App() {
   };
 
   const trackAssets = () => {
-    // Track images
+    const videoElements: HTMLVideoElement[] = [];
+
+    // 1. Force load all critical videos
+    CRITICAL_VIDEOS.forEach(videoPath => {
+      const normalizedPath = videoPath.trim();
+      assetsToLoad.current.add(`video:${normalizedPath}`);
+      
+      const video = document.createElement('video');
+      video.src = normalizedPath;
+      video.preload = "auto";
+      video.load(); // Force start loading
+      
+      const handleVideoReady = () => {
+        handleAssetLoad('video', normalizedPath);
+        video.removeEventListener('canplaythrough', handleVideoReady);
+        video.removeEventListener('error', handleVideoReady);
+      };
+      
+      video.addEventListener('canplaythrough', handleVideoReady);
+      video.addEventListener('error', handleVideoReady);
+      
+      document.body.appendChild(video);
+      videoElements.push(video);
+    });
+
+    // 2. Track images
     Array.from(document.images).forEach((img) => {
       if (!img.complete && img.src) {
         assetsToLoad.current.add(`image:${img.src}`);
@@ -87,17 +128,7 @@ function App() {
       }
     });
 
-    // Track videos
-    Array.from(document.querySelectorAll('video')).forEach((video) => {
-      if (video.readyState < 3 && video.src) {
-        assetsToLoad.current.add(`video:${video.src}`);
-        video.addEventListener('canplaythrough', () => handleAssetLoad('video', video.src));
-        video.addEventListener('loadeddata', () => handleAssetLoad('video', video.src));
-        video.addEventListener('error', () => handleAssetLoad('video', video.src));
-      }
-    });
-
-    // Track fonts
+    // 3. Track fonts
     if (document.fonts) {
       const fontsToCheck = getUsedFontFamilies();
       fontsToCheck.forEach((font) => {
@@ -108,6 +139,10 @@ function App() {
         );
       });
     }
+
+    return () => {
+      videoElements.forEach(v => v.remove());
+    };
   };
 
   const updateProgress = () => {
@@ -116,6 +151,7 @@ function App() {
     const actualProgress = total > 0 ? (loaded / total) * 100 : 100;
 
     setProgress(prev => {
+      // Smooth animation with actual progress as minimum
       const newProgress = Math.max(actualProgress, Math.min(prev + 2, 95));
       return newProgress;
     });
@@ -128,6 +164,7 @@ function App() {
   const completeLoading = () => {
     if (progressInterval.current) {
       clearInterval(progressInterval.current);
+      progressInterval.current = undefined;
     }
     setProgress(100);
     setTimeout(() => setShowLoading(false), 500);
@@ -135,24 +172,19 @@ function App() {
 
   useEffect(() => {
     if (!entryMode && showLoading) {
-      trackAssets();
+      const cleanupVideoElements = trackAssets();
 
-      // If no assets to load, skip loading screen
       if (assetsToLoad.current.size === 0) {
         completeLoading();
         return;
       }
 
-      // Start progress animation
       progressInterval.current = setInterval(updateProgress, 100);
-
-      // Fallback timeout
-      const timeout = setTimeout(completeLoading, 15000);
+      const timeout = setTimeout(completeLoading, 20000); // 20s timeout
 
       return () => {
-        if (progressInterval.current) {
-          clearInterval(progressInterval.current);
-        }
+        cleanupVideoElements();
+        if (progressInterval.current) clearInterval(progressInterval.current);
         clearTimeout(timeout);
       };
     }
