@@ -5,23 +5,48 @@ import { Toaster } from "@/components/ui/toaster";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
 import EntryScreen from "./components/entry-screen";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect, useRef } from "react";
+import "./styles/LoadingScreen.css";
 
-// Loading screen component
-const LoadingScreen = () => (
-  <motion.div 
-    className="fixed inset-0 bg-black z-50 flex items-center justify-center"
-    initial={{ opacity: 1 }}
-    exit={{ opacity: 0, transition: { duration: 0.5 } }}
-    transition={{ duration: 0.3 }}
-  >
-    <div className="flex flex-col items-center">
-      <div className="w-16 h-16 border-4 border-d9d9d9 border-t-transparent rounded-full animate-spin mb-4"></div>
-      <p className="text-d9d9d9 text-lg">Loading...</p>
+// Loading screen component with animated progress bar and percentage
+const LoadingScreen = ({ progress = 0, isExiting = false }) => {
+  const [isVisible, setIsVisible] = useState(false);
+  const prevProgress = useRef(0);
+  const progressRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Trigger fade in animation
+    const timer = setTimeout(() => setIsVisible(true), 10);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Update progress with smooth transition
+  useEffect(() => {
+    if (progressRef.current) {
+      progressRef.current.style.width = `${progress}%`;
+      prevProgress.current = progress;
+    }
+  }, [progress]);
+
+  return (
+    <div className={`loading-screen ${isExiting ? 'fade-out' : ''}`}>
+      <div className={`loading-container ${!isVisible ? 'opacity-0' : ''}`}>
+        <div className="loading-strip">
+          <div 
+            ref={progressRef}
+            className="loading-progress"
+            style={{ width: '0%' }}
+          />
+        </div>
+        <div className="loading-info">
+          <span className="loading-text">Loading</span>
+          <span className="loading-percentage">{Math.round(progress)}%</span>
+        </div>
+      </div>
     </div>
-  </motion.div>
-);
+  );
+};
 
 function AppRouter() {
   return (
@@ -34,8 +59,11 @@ function AppRouter() {
 
 function App() {
   const [entryMode, setEntryMode] = useState(true);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [progress, setProgress] = useState(0);
   const assetsLoaded = useRef(false);
+  const [homeReady, setHomeReady] = useState(false);
+  const progressInterval = useRef<NodeJS.Timeout>();
   
   // Check if all assets are loaded
   const checkAssetsLoaded = () => {
@@ -66,62 +94,89 @@ function App() {
     return allImagesLoaded && allVideosLoaded && allFontsLoaded;
   };
   
-  // Handle asset loading
+  // Handle asset loading when home is ready to be shown
   useEffect(() => {
-    // Clear any previously stored value
-    localStorage.removeItem("hasVisitedBefore");
-    
-    // Check if assets are already loaded
-    if (checkAssetsLoaded() && !assetsLoaded.current) {
-      setIsLoading(false);
-      assetsLoaded.current = true;
-      return;
-    }
-    
-    // Set up event listeners for assets
-    const handleLoad = () => {
-      if (checkAssetsLoaded() && !assetsLoaded.current) {
-        // Small delay to ensure everything is ready
+    // Only run this effect when home is ready to be shown (after entry screen)
+    if (!entryMode && !homeReady) {
+      setIsLoading(true);
+      setProgress(0);
+      
+      // Start progress animation
+      progressInterval.current = setInterval(() => {
+        setProgress(prev => {
+          // Slow down as we approach 90%
+          const increment = prev < 50 ? 5 : prev < 80 ? 2 : 1;
+          return Math.min(prev + increment, 90);
+        });
+      }, 100);
+      
+      const checkAssets = () => {
+        if (checkAssetsLoaded()) {
+          // Set progress to 100% and finish loading
+          setProgress(100);
+          
+          // Small delay to show 100% and ensure everything is ready
+          setTimeout(() => {
+            if (progressInterval.current) clearInterval(progressInterval.current);
+            setIsLoading(false);
+            setHomeReady(true);
+          }, 500);
+          return true;
+        }
+        return false;
+      };
+      
+      // Initial check
+      if (checkAssets()) {
+        return;
+      }
+      
+      // Set up event listeners for assets
+      const handleLoad = () => {
+        if (checkAssets()) {
+          window.removeEventListener('load', handleLoad);
+          window.removeEventListener('DOMContentLoaded', handleLoad);
+        }
+      };
+      
+      // Add event listeners
+      window.addEventListener('load', handleLoad);
+      window.addEventListener('DOMContentLoaded', handleLoad);
+      
+      // Fallback in case some assets don't trigger load events
+      const timeout = setTimeout(() => {
+        console.log('Fallback: Loading timeout reached, showing content');
+        if (progressInterval.current) clearInterval(progressInterval.current);
+        setProgress(100);
         setTimeout(() => {
           setIsLoading(false);
-          assetsLoaded.current = true;
-        }, 500);
-      }
-    };
-    
-    // Add event listeners
-    window.addEventListener('load', handleLoad);
-    window.addEventListener('DOMContentLoaded', handleLoad);
-    
-    // Fallback in case some assets don't trigger load events
-    const timeout = setTimeout(() => {
-      if (!assetsLoaded.current) {
-        console.log('Fallback: Loading timeout reached, showing content');
-        setIsLoading(false);
-        assetsLoaded.current = true;
-      }
-    }, 5000); // 5 second timeout as fallback
-    
-    return () => {
-      window.removeEventListener('load', handleLoad);
-      window.removeEventListener('DOMContentLoaded', handleLoad);
-      clearTimeout(timeout);
-    };
-  }, []);
+          setHomeReady(true);
+        }, 300);
+      }, 10000); // 10 second timeout as fallback
+      
+      return () => {
+        window.removeEventListener('load', handleLoad);
+        window.removeEventListener('DOMContentLoaded', handleLoad);
+        clearTimeout(timeout);
+      };
+    }
+  }, [entryMode, homeReady]);
 
   const toggleEntryMode = () => {
-    setEntryMode(prev => !prev);
+    setEntryMode(false);
   };
 
   return (
     <QueryClientProvider client={queryClient}>
-      {isLoading && <LoadingScreen />}
       <AnimatePresence mode="wait">
-        {!isLoading && (entryMode ? (
-          <EntryScreen toggleEntryMode={toggleEntryMode} />
+        {entryMode ? (
+          <EntryScreen key="entry" toggleEntryMode={toggleEntryMode} />
         ) : (
-          <AppRouter />
-        ))}
+          <div key="app">
+            {isLoading && <LoadingScreen progress={progress} />}
+            <AppRouter />
+          </div>
+        )}
       </AnimatePresence>
       <Toaster />
     </QueryClientProvider>
