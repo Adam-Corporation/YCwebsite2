@@ -283,11 +283,11 @@ function App() {
         console.log("✅ ALL embedded assets verified - YC Demo ready for presentation!");
         setAssetsReady(true);
         
-        // Since everything is embedded, show immediately
-        setShowLoading(false);
-        console.log("🎉 Demo interface loaded - all assets embedded in build!");
-        
-        // Page will become visible via useEffect when showLoading becomes false
+        // Show loading for 10 seconds to ensure page is perfectly ready
+        setTimeout(() => {
+          setShowLoading(false);
+          console.log("🎉 Demo interface loaded after 10-second guarantee period!");
+        }, 10000);
       } else {
         console.error(`❌ CRITICAL: Only ${totalLoaded}/${totalAssets} assets loaded!`);
         console.error("YC Demo requires ALL embedded assets to be ready");
