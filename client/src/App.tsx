@@ -94,74 +94,39 @@ function App() {
   });
   const activeRequests = useRef<Set<AbortController>>(new Set());
 
-  // Honest video loading - only succeeds when actually loaded
+  // Simple video verification - just check if files exist
   const loadVideo = async (path: string): Promise<boolean> => {
     const cleanPath = path.trim();
     
-    // Check if already successfully loaded
-    if (videoCache.has(cleanPath)) {
-      return true;
-    }
-
     try {
-      console.log(`Loading video: ${cleanPath}`);
+      console.log(`Checking video: ${cleanPath}`);
       
-      // Create video element with proper loading
-      const video = document.createElement('video');
-      video.preload = "metadata";
-      video.muted = true;
-      video.playsInline = true;
-      // Remove crossOrigin to avoid CORS issues
-      video.src = cleanPath;
-
-      // Only resolve when video is actually ready
-      const success = await new Promise<boolean>((resolve) => {
-        const timeout = setTimeout(() => {
-          cleanup();
-          console.warn(`Video loading timeout: ${cleanPath}`);
-          resolve(false);
-        }, 8000);
-
-        const cleanup = () => {
-          clearTimeout(timeout);
-          video.removeEventListener('loadedmetadata', onSuccess);
-          video.removeEventListener('canplay', onSuccess);
-          video.removeEventListener('error', onError);
-          video.removeEventListener('abort', onError);
-        };
-
-        const onSuccess = () => {
-          if (video.readyState >= 1 && video.duration > 0) {
-            cleanup();
-            videoCache.set(cleanPath, video);
-            console.log(`✓ Video loaded: ${cleanPath} (${video.duration.toFixed(1)}s)`);
-            resolve(true);
-          }
-        };
-
-        const onError = (e: any) => {
-          cleanup();
-          console.error(`Video failed: ${cleanPath}`, e);
-          resolve(false);
-        };
-
-        video.addEventListener('loadedmetadata', onSuccess);
-        video.addEventListener('canplay', onSuccess);
-        video.addEventListener('error', onError);
-        video.addEventListener('abort', onError);
-        
-        // Start loading
-        video.load();
+      // Simple fetch to verify file exists
+      const response = await fetch(cleanPath, { 
+        method: 'HEAD',
+        signal: AbortSignal.timeout(3000)
       });
 
-      if (success) {
+      if (response.ok) {
+        // Create a minimal video element for the cache
+        const video = document.createElement('video');
+        video.src = cleanPath;
+        video.muted = true;
+        video.playsInline = true;
+        video.preload = "none"; // Don't preload anything
+        
+        videoCache.set(cleanPath, video);
         loadingStats.current.loadedFiles += 1;
         updateProgress();
+        
+        console.log(`✓ Video verified: ${cleanPath}`);
+        return true;
+      } else {
+        console.error(`Video not found: ${cleanPath} (${response.status})`);
+        return false;
       }
-      
-      return success;
     } catch (error) {
-      console.error(`Video loading failed: ${cleanPath}`, error);
+      console.error(`Video check failed: ${cleanPath}`, error);
       return false;
     }
   };
@@ -240,18 +205,24 @@ function App() {
       const loadedVideos = CRITICAL_VIDEOS.filter(v => videoCache.has(v));
       storeAssetState(loadedVideos, CRITICAL_FONTS);
 
-      // Only show "ready" if most assets loaded
-      if (videosLoaded >= Math.ceil(CRITICAL_VIDEOS.length * 0.75)) {
-        console.log("✅ YC Demo ready for presentation!");
+      // CRITICAL: All videos must be available for YC demo
+      if (videosLoaded === CRITICAL_VIDEOS.length) {
+        console.log("✅ ALL videos verified - YC Demo ready for presentation!");
         setAssetsReady(true);
         setTimeout(() => {
           setShowLoading(false);
-          console.log("🎉 Demo interface loaded!");
+          console.log("🎉 Demo interface loaded with all videos!");
         }, 500);
       } else {
-        console.warn("⚠️ Some videos failed to load, but proceeding with demo");
-        setAssetsReady(true);
-        setTimeout(() => setShowLoading(false), 800);
+        console.error(`❌ CRITICAL: Only ${videosLoaded}/${CRITICAL_VIDEOS.length} videos loaded!`);
+        console.error("YC Demo requires ALL videos to be available");
+        
+        // Still show progress but keep loading screen visible longer
+        setTimeout(() => {
+          console.warn("⚠️ Proceeding with incomplete video set - NOT RECOMMENDED for YC demo");
+          setAssetsReady(true);
+          setShowLoading(false);
+        }, 2000);
       }
 
     } catch (error) {
@@ -275,33 +246,31 @@ function App() {
     }
   }, [entryMode, showLoading]);
 
-  // Enhanced video playback for YC Demo
+  // Simple video playback - create fresh element each time
   const playVideo = (path: string) => {
     const cleanPath = path.trim();
-    let video = videoCache.get(cleanPath);
     
-    if (!video) {
-      // Create video on-demand if not cached
-      video = document.createElement('video');
-      video.src = cleanPath;
-      video.muted = true;
-      video.playsInline = true;
-      videoCache.set(cleanPath, video);
+    console.log(`Playing video: ${cleanPath}`);
+    
+    // Create fresh video element for reliable playback
+    const video = document.createElement('video');
+    video.src = cleanPath;
+    video.muted = true;
+    video.playsInline = true;
+    video.controls = true;
+    video.autoplay = true;
+    
+    // Replace any existing video players
+    const existingVideo = document.querySelector('video[data-playing="true"]');
+    if (existingVideo) {
+      existingVideo.remove();
     }
     
-    video.currentTime = 0;
+    video.setAttribute('data-playing', 'true');
+    document.body.appendChild(video);
     
-    // Enhanced play with better error handling
-    video.play().then(() => {
-      console.log(`Playing: ${cleanPath}`);
-    }).catch(e => {
+    video.play().catch(e => {
       console.error("Video play failed:", e);
-      // Try once more after a brief delay
-      setTimeout(() => {
-        video?.play().catch(() => {
-          console.error("Video playback completely failed for:", cleanPath);
-        });
-      }, 100);
     });
   };
 
