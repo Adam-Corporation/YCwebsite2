@@ -1,0 +1,102 @@
+content.js:272   Developers, remember to disable the Screen Shader chrome extension and reload the page when developing.    Screen Shader updates the dom often and might cause lag in the devtools!                                   You can disable this warning in Screen Shader's settings.                                                
+index-DxfCOQmU.js:3922 🚀 Starting complete asset loading for YC Demo
+index-DxfCOQmU.js:3922 📝 Loading fonts...
+index-DxfCOQmU.js:3922 Loading font: /fonts/Boldonse-Regular.ttf
+index-DxfCOQmU.js:3922 ✓ Font loaded successfully: /fonts/Boldonse-Regular.ttf
+index-DxfCOQmU.js:3922 🎬 Loading embedded videos...
+index-DxfCOQmU.js:3922 Loading embedded video: /Videos/1-HelloWorldv2.mp4
+index-DxfCOQmU.js:3922 Loading embedded video: /Videos/2-MemoryTestv1.mp4
+index-DxfCOQmU.js:3922 Loading embedded video: /Videos/3-ChatGPTFinalVersion.mp4
+index-DxfCOQmU.js:3922 Loading embedded video: /Videos/4-GoogleFormsTestv2.mp4
+index-DxfCOQmU.js:3922 Loading embedded video: /Videos/5-SignInTest - Made with Clipchamp.mp4
+index-DxfCOQmU.js:3922 Loading embedded video: /Videos/6-TweetTest - Made with Clipchamp.mp4
+index-DxfCOQmU.js:3922 Loading embedded video: /Videos/7-GuiBasicTest - Made with Clipchamp.mp4
+index-DxfCOQmU.js:3922 Loading embedded video: /Videos/8-TerminalBasicTest - Made with Clipchamp.mp4
+index-DxfCOQmU.js:3922 ✓ Embedded video ready: /Videos/1-HelloWorldv2.mp4
+index-DxfCOQmU.js:3922 ✓ Embedded video ready: /Videos/2-MemoryTestv1.mp4
+index-DxfCOQmU.js:3922 ✓ Embedded video ready: /Videos/3-ChatGPTFinalVersion.mp4
+index-DxfCOQmU.js:3922 ✓ Embedded video ready: /Videos/4-GoogleFormsTestv2.mp4
+index-DxfCOQmU.js:3922 ✓ Embedded video ready: /Videos/5-SignInTest - Made with Clipchamp.mp4
+index-DxfCOQmU.js:3922 ✓ Embedded video ready: /Videos/6-TweetTest - Made with Clipchamp.mp4
+index-DxfCOQmU.js:3922 ✓ Embedded video ready: /Videos/7-GuiBasicTest - Made with Clipchamp.mp4
+index-DxfCOQmU.js:3922 ✓ Embedded video ready: /Videos/8-TerminalBasicTest - Made with Clipchamp.mp4
+index-DxfCOQmU.js:3922 🎨 Ensuring complete render with all styles...
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true
+index-DxfCOQmU.js:3922 🔄 Still loading: styles=false, dom=true, elements=true, computed=true

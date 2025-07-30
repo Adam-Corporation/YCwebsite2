@@ -184,57 +184,21 @@ function App() {
     }
   };
 
-  // Ensure DOM is fully painted with all styles - NEVER timeout, wait indefinitely
-  const waitForCompleteRender = async (): Promise<boolean> => {
+  // Since CSS is embedded in build like videos, just ensure fonts are ready
+  const waitForFontsOnly = async (): Promise<boolean> => {
     return new Promise((resolve) => {
-      const checkComplete = () => {
-        // Check 1: All stylesheets loaded and accessible
-        const stylesheets = Array.from(document.styleSheets);
-        const stylesLoaded = stylesheets.length > 0 && stylesheets.every(sheet => {
-          try {
-            const rules = sheet.cssRules || sheet.rules;
-            return rules && rules.length > 0;
-          } catch {
-            return false;
-          }
+      if (document.fonts) {
+        document.fonts.ready.then(() => {
+          console.log("✅ All fonts loaded and rendered");
+          resolve(true);
         });
-        
-        // Check 2: DOM is completely ready
-        const domReady = document.readyState === 'complete';
-        
-        // Check 3: Critical elements exist and have computed styles
-        const videoSection = document.querySelector('[class*="video"]');
-        const hasElements = videoSection !== null;
-        const hasComputedStyles = videoSection ? 
-          getComputedStyle(videoSection).display !== '' && 
-          getComputedStyle(videoSection).position !== '' : true;
-        
-        // Check 4: Font loading complete
-        const fontsReadyPromise = document.fonts ? document.fonts.ready : Promise.resolve();
-        
-        // ALL checks must pass - no compromises for YC demo
-        if (stylesLoaded && domReady && hasElements && hasComputedStyles) {
-          console.log("✓ All core checks passed, verifying fonts...");
-          fontsReadyPromise.then(() => {
-            // Triple RAF to ensure complete paint cycle
-            requestAnimationFrame(() => {
-              requestAnimationFrame(() => {
-                requestAnimationFrame(() => {
-                  console.log("✅ PERFECT: Complete rendering verified - DOM fully painted with styles");
-                  resolve(true);
-                });
-              });
-            });
-          });
-        } else {
-          // Keep checking - NEVER give up for YC demo
-          console.log(`🔄 Still loading: styles=${stylesLoaded}, dom=${domReady}, elements=${hasElements}, computed=${hasComputedStyles}`);
-          setTimeout(checkComplete, 100);
-        }
-      };
-      
-      // Start checking immediately
-      checkComplete();
+      } else {
+        // Fallback for browsers without Font Loading API
+        setTimeout(() => {
+          console.log("✅ Font loading complete (fallback)");
+          resolve(true);
+        }, 100);
+      }
     });
   };
 
@@ -261,19 +225,19 @@ function App() {
       const videoResults = await Promise.allSettled(CRITICAL_VIDEOS.map(videoObj => loadVideo(videoObj)));
       const videosLoaded = videoResults.filter(r => r.status === 'fulfilled' && r.value).length;
 
-      // Wait for complete DOM rendering with all styles
-      console.log("🎨 Ensuring complete render with all styles...");
-      await waitForCompleteRender();
+      // CSS is embedded in build, just wait for fonts
+      console.log("✍️ Ensuring fonts are rendered...");
+      await waitForFontsOnly();
       loadingStats.current.loadedFiles += 1;
       updateProgress();
 
-      const totalLoaded = fontsLoaded + videosLoaded + 1; // +1 for CSS
+      const totalLoaded = fontsLoaded + videosLoaded + 1; // +1 for font rendering
       const totalAssets = CRITICAL_FONTS.length + CRITICAL_VIDEOS.length + 1;
       
       console.log(`📊 Loading complete: ${totalLoaded}/${totalAssets} assets loaded`);
       console.log(`   - Fonts: ${fontsLoaded}/${CRITICAL_FONTS.length}`);
       console.log(`   - Videos: ${videosLoaded}/${CRITICAL_VIDEOS.length}`);
-      console.log(`   - CSS: Fully rendered and painted`);
+      console.log(`   - Fonts: Fully rendered`);
 
       // Set final progress
       const finalProgress = Math.min(100, (totalLoaded / totalAssets) * 100);
@@ -283,23 +247,18 @@ function App() {
       const loadedVideos = CRITICAL_VIDEOS.filter(v => videoCache.has(v.path)).map(v => v.path);
       storeAssetState(loadedVideos, CRITICAL_FONTS);
 
-      // CRITICAL: All assets AND styles must be ready for YC demo
+      // CRITICAL: All assets must be ready for YC demo  
       if (videosLoaded === CRITICAL_VIDEOS.length && totalLoaded === totalAssets) {
-        console.log("✅ ALL assets AND complete styling verified - YC Demo ready!");
+        console.log("✅ ALL embedded assets verified - YC Demo ready for presentation!");
         setAssetsReady(true);
         
-        // Final paint check before revealing interface
-        requestAnimationFrame(() => {
-          requestAnimationFrame(() => {
-            setShowLoading(false);
-            console.log("🎉 Demo interface revealed with perfect styling!");
-          });
-        });
+        // Since everything is embedded, show immediately
+        setShowLoading(false);
+        console.log("🎉 Demo interface loaded - all assets embedded in build!");
       } else {
         console.error(`❌ CRITICAL: Only ${totalLoaded}/${totalAssets} assets loaded!`);
-        console.error("YC Demo requires ALL videos AND styles to be ready");
+        console.error("YC Demo requires ALL embedded assets to be ready");
         console.error("🚫 BLOCKING: Will NOT show interface until everything is perfect");
-        // NO timeout - keep loading screen visible until everything is ready
         setAssetsReady(false);
       }
 
