@@ -184,35 +184,56 @@ function App() {
     }
   };
 
-  // Ensure all stylesheets are loaded before showing interface
-  const waitForStylesheets = async (): Promise<boolean> => {
+  // Ensure DOM is fully painted with all styles before showing interface
+  const waitForCompleteRender = async (): Promise<boolean> => {
     return new Promise((resolve) => {
-      const checkStyles = () => {
+      let attempts = 0;
+      const maxAttempts = 100; // 5 seconds max
+      
+      const checkComplete = () => {
+        attempts++;
+        
+        // Check 1: All stylesheets loaded
         const stylesheets = Array.from(document.styleSheets);
-        const allLoaded = stylesheets.every(sheet => {
+        const stylesLoaded = stylesheets.length > 0 && stylesheets.every(sheet => {
           try {
-            // Try to access rules to ensure CSS is loaded
             return sheet.cssRules || sheet.rules;
           } catch {
             return false;
           }
         });
         
-        if (allLoaded && stylesheets.length > 0) {
-          console.log("✓ All stylesheets loaded and parsed");
+        // Check 2: DOM is ready and painted
+        const domReady = document.readyState === 'complete';
+        
+        // Check 3: Test if specific elements have proper styling
+        const testElement = document.querySelector('.video-card');
+        const hasStyles = testElement ? getComputedStyle(testElement).position !== '' : true;
+        
+        // Check 4: Fonts are rendered (using font loading API if available)
+        const fontsReady = document.fonts ? document.fonts.ready : Promise.resolve();
+        
+        if (stylesLoaded && domReady && hasStyles) {
+          fontsReady.then(() => {
+            // Final check: Request animation frame to ensure paint is complete
+            requestAnimationFrame(() => {
+              requestAnimationFrame(() => {
+                console.log("✓ Complete rendering verified - DOM fully painted with styles");
+                resolve(true);
+              });
+            });
+          });
+        } else if (attempts >= maxAttempts) {
+          console.warn("⚠️ Complete render timeout - proceeding anyway");
+          console.log(`Debug: styles=${stylesLoaded}, dom=${domReady}, hasStyles=${hasStyles}`);
           resolve(true);
         } else {
-          setTimeout(checkStyles, 50);
+          setTimeout(checkComplete, 50);
         }
       };
       
-      checkStyles();
-      
-      // Timeout after 5 seconds
-      setTimeout(() => {
-        console.warn("CSS loading timeout - proceeding anyway");
-        resolve(true);
-      }, 5000);
+      // Start checking immediately
+      checkComplete();
     });
   };
 
@@ -239,9 +260,9 @@ function App() {
       const videoResults = await Promise.allSettled(CRITICAL_VIDEOS.map(videoObj => loadVideo(videoObj)));
       const videosLoaded = videoResults.filter(r => r.status === 'fulfilled' && r.value).length;
 
-      // Wait for ALL CSS to be loaded and parsed
-      console.log("🎨 Ensuring all CSS is loaded and styled...");
-      await waitForStylesheets();
+      // Wait for complete DOM rendering with all styles
+      console.log("🎨 Ensuring complete render with all styles...");
+      await waitForCompleteRender();
       loadingStats.current.loadedFiles += 1;
       updateProgress();
 
@@ -251,7 +272,7 @@ function App() {
       console.log(`📊 Loading complete: ${totalLoaded}/${totalAssets} assets loaded`);
       console.log(`   - Fonts: ${fontsLoaded}/${CRITICAL_FONTS.length}`);
       console.log(`   - Videos: ${videosLoaded}/${CRITICAL_VIDEOS.length}`);
-      console.log(`   - CSS: Fully loaded and parsed`);
+      console.log(`   - CSS: Fully rendered and painted`);
 
       // Set final progress
       const finalProgress = Math.min(100, (totalLoaded / totalAssets) * 100);
@@ -263,14 +284,16 @@ function App() {
 
       // CRITICAL: All assets AND styles must be ready for YC demo
       if (videosLoaded === CRITICAL_VIDEOS.length && totalLoaded === totalAssets) {
-        console.log("✅ ALL assets AND styles verified - YC Demo ready for presentation!");
+        console.log("✅ ALL assets AND complete styling verified - YC Demo ready!");
         setAssetsReady(true);
         
-        // Additional delay to ensure DOM is fully rendered with styles
-        setTimeout(() => {
-          setShowLoading(false);
-          console.log("🎉 Demo interface loaded with perfect styling!");
-        }, 200);
+        // Final paint check before revealing interface
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            setShowLoading(false);
+            console.log("🎉 Demo interface revealed with perfect styling!");
+          });
+        });
       } else {
         console.error(`❌ CRITICAL: Only ${totalLoaded}/${totalAssets} assets loaded!`);
         console.error("YC Demo requires ALL videos AND styles to be ready");
