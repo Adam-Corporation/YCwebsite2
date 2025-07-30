@@ -8,27 +8,11 @@ import NotFound from "@/pages/not-found";
 import EntryScreen from "./components/entry-screen";
 import "./styles/LoadingScreen.css";
 
-// Import videos directly - they'll be embedded in the build
-import video1 from '/Videos/1-HelloWorldv2.mp4';
-import video2 from '/Videos/2-MemoryTestv1.mp4';
-import video3 from '/Videos/3-ChatGPTFinalVersion.mp4';
-import video4 from '/Videos/4-GoogleFormsTestv2.mp4';
-import video5 from '/Videos/5-SignInTest - Made with Clipchamp.mp4';
-import video6 from '/Videos/6-TweetTest - Made with Clipchamp.mp4';
-import video7 from '/Videos/7-GuiBasicTest - Made with Clipchamp.mp4';
-import video8 from '/Videos/8-TerminalBasicTest - Made with Clipchamp.mp4';
+// Import truly embedded videos as base64 data URLs
+import { EMBEDDED_VIDEOS } from './embedded-videos';
 
-// Critical videos for YC demo - now embedded in build
-const CRITICAL_VIDEOS = [
-  { path: '/Videos/1-HelloWorldv2.mp4', src: video1 },
-  { path: '/Videos/2-MemoryTestv1.mp4', src: video2 },
-  { path: '/Videos/3-ChatGPTFinalVersion.mp4', src: video3 },
-  { path: '/Videos/4-GoogleFormsTestv2.mp4', src: video4 },
-  { path: '/Videos/5-SignInTest - Made with Clipchamp.mp4', src: video5 },
-  { path: '/Videos/6-TweetTest - Made with Clipchamp.mp4', src: video6 },
-  { path: '/Videos/7-GuiBasicTest - Made with Clipchamp.mp4', src: video7 },
-  { path: '/Videos/8-TerminalBasicTest - Made with Clipchamp.mp4', src: video8 }
-];
+// Critical videos for YC demo - now embedded as base64 bytes in JavaScript
+const CRITICAL_VIDEOS = EMBEDDED_VIDEOS;
 
 const CRITICAL_FONTS = [
   '/fonts/Boldonse-Regular.ttf'
@@ -372,7 +356,7 @@ function App() {
         <div style={{ position: 'relative', minHeight: '100vh' }}>
           <AppRouter />
           {showLoading && (
-            <div style={{
+            <div className="loading-overlay" style={{
               position: 'fixed',
               top: 0,
               left: 0,

@@ -16,6 +16,11 @@ html.loading {
   opacity: 0 !important;
 }
 
+html.loading .loading-overlay {
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
 html.ready {
   visibility: visible !important;
   opacity: 1 !important;
