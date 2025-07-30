@@ -24,6 +24,8 @@ This is a React application that was originally built in Replit Agent and is bei
   - Implemented production-ready video loading (metadata only)
   - Added localStorage caching for faster reloads
   - Optimized for deployment reliability
+  - Made loading progress completely honest - only advances when assets actually load
+  - Fixed DOMException issues with CORS and video loading
 
 ## Migration Progress
 Currently working through `.local/state/replit/agent/progress_tracker.md` checklist.

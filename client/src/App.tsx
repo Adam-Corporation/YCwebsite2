@@ -94,86 +94,75 @@ function App() {
   });
   const activeRequests = useRef<Set<AbortController>>(new Set());
 
-  // Production-ready video loading for YC Demo
+  // Honest video loading - only succeeds when actually loaded
   const loadVideo = async (path: string): Promise<boolean> => {
     const cleanPath = path.trim();
     
-    // Check if already cached
+    // Check if already successfully loaded
     if (videoCache.has(cleanPath)) {
-      loadingStats.current.loadedFiles += 1;
-      updateProgress();
       return true;
     }
 
     try {
-      console.log(`Preparing video: ${cleanPath}`);
+      console.log(`Loading video: ${cleanPath}`);
       
-      // Just verify the video exists with a simple HEAD request
-      const response = await fetch(cleanPath, { 
-        method: 'HEAD',
-        signal: AbortSignal.timeout(5000)
-      });
-
-      if (!response.ok) {
-        throw new Error(`Video not found: ${response.status}`);
-      }
-
-      // Create video element with minimal preloading for faster startup
+      // Create video element with proper loading
       const video = document.createElement('video');
-      video.preload = "metadata"; // Only load metadata, not the full video
+      video.preload = "metadata";
       video.muted = true;
       video.playsInline = true;
+      // Remove crossOrigin to avoid CORS issues
       video.src = cleanPath;
 
-      // Wait only for metadata to load (much faster)
-      await new Promise<void>((resolve, reject) => {
+      // Only resolve when video is actually ready
+      const success = await new Promise<boolean>((resolve) => {
         const timeout = setTimeout(() => {
-          reject(new Error(`Metadata timeout: ${cleanPath}`));
-        }, 3000); // Much shorter timeout
+          cleanup();
+          console.warn(`Video loading timeout: ${cleanPath}`);
+          resolve(false);
+        }, 8000);
 
-        const onMetadata = () => {
+        const cleanup = () => {
           clearTimeout(timeout);
-          video.removeEventListener('loadedmetadata', onMetadata);
+          video.removeEventListener('loadedmetadata', onSuccess);
+          video.removeEventListener('canplay', onSuccess);
           video.removeEventListener('error', onError);
-          
-          if (video.duration > 0) {
+          video.removeEventListener('abort', onError);
+        };
+
+        const onSuccess = () => {
+          if (video.readyState >= 1 && video.duration > 0) {
+            cleanup();
             videoCache.set(cleanPath, video);
-            loadingStats.current.loadedFiles += 1;
-            updateProgress();
-            console.log(`✓ Video ready: ${cleanPath}`);
-            resolve();
-          } else {
-            reject(new Error(`Invalid video: ${cleanPath}`));
+            console.log(`✓ Video loaded: ${cleanPath} (${video.duration.toFixed(1)}s)`);
+            resolve(true);
           }
         };
 
-        const onError = () => {
-          clearTimeout(timeout);
-          video.removeEventListener('loadedmetadata', onMetadata);
-          video.removeEventListener('error', onError);
-          reject(new Error(`Video error: ${cleanPath}`));
+        const onError = (e: any) => {
+          cleanup();
+          console.error(`Video failed: ${cleanPath}`, e);
+          resolve(false);
         };
 
-        video.addEventListener('loadedmetadata', onMetadata, { once: true });
-        video.addEventListener('error', onError, { once: true });
+        video.addEventListener('loadedmetadata', onSuccess);
+        video.addEventListener('canplay', onSuccess);
+        video.addEventListener('error', onError);
+        video.addEventListener('abort', onError);
         
+        // Start loading
         video.load();
       });
 
-      return true;
+      if (success) {
+        loadingStats.current.loadedFiles += 1;
+        updateProgress();
+      }
+      
+      return success;
     } catch (error) {
-      console.error(`Video preparation failed: ${cleanPath}`, error);
-      
-      // Create a fallback video element anyway to prevent blocking
-      const video = document.createElement('video');
-      video.src = cleanPath;
-      video.muted = true;
-      video.playsInline = true;
-      videoCache.set(cleanPath, video);
-      
-      loadingStats.current.loadedFiles += 1;
-      updateProgress();
-      return true; // Return true to not block the demo
+      console.error(`Video loading failed: ${cleanPath}`, error);
+      return false;
     }
   };
 
@@ -214,7 +203,7 @@ function App() {
   };
 
   const loadAssets = async () => {
-    console.log("🚀 YC Demo - Fast loading sequence initiated");
+    console.log("🚀 Starting honest asset loading for YC Demo");
     
     loadingStats.current = {
       totalBytes: 0,
@@ -226,33 +215,50 @@ function App() {
     setProgress(0);
 
     try {
-      // Load fonts instantly
+      // Load fonts first
       console.log("📝 Loading fonts...");
-      await Promise.allSettled(CRITICAL_FONTS.map(font => loadFont(font)));
-
-      // Load video metadata only (fast)
-      console.log("🎬 Preparing videos...");
-      await Promise.allSettled(CRITICAL_VIDEOS.map(video => loadVideo(video)));
-
-      // Mark as complete
-      console.log("✅ YC Demo ready for presentation!");
-      setProgress(100);
-      setAssetsReady(true);
+      const fontResults = await Promise.allSettled(CRITICAL_FONTS.map(font => loadFont(font)));
+      const fontsLoaded = fontResults.filter(r => r.status === 'fulfilled' && r.value).length;
       
-      // Store in cache for next time
-      storeAssetState(CRITICAL_VIDEOS, CRITICAL_FONTS);
+      // Load videos with honest progress tracking
+      console.log("🎬 Loading videos...");
+      const videoResults = await Promise.allSettled(CRITICAL_VIDEOS.map(video => loadVideo(video)));
+      const videosLoaded = videoResults.filter(r => r.status === 'fulfilled' && r.value).length;
+
+      const totalLoaded = fontsLoaded + videosLoaded;
+      const totalAssets = CRITICAL_FONTS.length + CRITICAL_VIDEOS.length;
       
-      setTimeout(() => {
-        setShowLoading(false);
-        console.log("🎉 Demo interface loaded!");
-      }, 300);
+      console.log(`📊 Loading complete: ${totalLoaded}/${totalAssets} assets loaded`);
+      console.log(`   - Fonts: ${fontsLoaded}/${CRITICAL_FONTS.length}`);
+      console.log(`   - Videos: ${videosLoaded}/${CRITICAL_VIDEOS.length}`);
+
+      // Set final progress based on actually loaded assets
+      const finalProgress = Math.min(100, (totalLoaded / totalAssets) * 100);
+      setProgress(finalProgress);
+
+      // Store successfully loaded assets
+      const loadedVideos = CRITICAL_VIDEOS.filter(v => videoCache.has(v));
+      storeAssetState(loadedVideos, CRITICAL_FONTS);
+
+      // Only show "ready" if most assets loaded
+      if (videosLoaded >= Math.ceil(CRITICAL_VIDEOS.length * 0.75)) {
+        console.log("✅ YC Demo ready for presentation!");
+        setAssetsReady(true);
+        setTimeout(() => {
+          setShowLoading(false);
+          console.log("🎉 Demo interface loaded!");
+        }, 500);
+      } else {
+        console.warn("⚠️ Some videos failed to load, but proceeding with demo");
+        setAssetsReady(true);
+        setTimeout(() => setShowLoading(false), 800);
+      }
 
     } catch (error) {
-      console.error("Error during loading:", error);
-      // Always show the demo - never block the presentation
+      console.error("Critical loading error:", error);
       setProgress(100);
       setAssetsReady(true);
-      setTimeout(() => setShowLoading(false), 200);
+      setTimeout(() => setShowLoading(false), 300);
     }
   };
 
