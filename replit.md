@@ -24,7 +24,10 @@ This is a React application that was originally built in Replit Agent and is bei
 Currently working through `.local/state/replit/agent/progress_tracker.md` checklist.
 
 ## User Preferences
-- No specific preferences documented yet
+- Critical YC Combinator demo website - maintain high quality at all times
+- DO NOT change core functionality - only enhance loading system
+- Videos and assets must load completely before page appears
+- Will use this platform for deployment (not Vercel/Netlify)
 
 ## Dependencies
 The project has all necessary dependencies installed including React, Three.js, Express, and development tools.

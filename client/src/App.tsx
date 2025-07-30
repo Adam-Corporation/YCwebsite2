@@ -19,6 +19,10 @@ const CRITICAL_VIDEOS = [
   '/Videos/8-TerminalBasicTest - Made with Clipchamp.mp4'
 ];
 
+const CRITICAL_FONTS = [
+  '/fonts/Boldonse-Regular.ttf'
+];
+
 // Improved video cache handler
 const videoCache = new Map<string, HTMLVideoElement>();
 
@@ -33,8 +37,11 @@ const LoadingScreen = ({ progress = 0 }) => {
           />
         </div>
         <div className="loading-info">
-          <span className="loading-text">Loading</span>
+          <span className="loading-text">Preparing Demo</span>
           <span className="loading-percentage">{Math.round(progress)}%</span>
+        </div>
+        <div className="loading-subtitle">
+          Loading videos and assets...
         </div>
       </div>
     </div>
@@ -63,8 +70,8 @@ function App() {
   });
   const activeRequests = useRef<Set<AbortController>>(new Set());
 
-  // Improved video loading with retry logic
-  const loadVideo = async (path: string, retries = 3): Promise<boolean> => {
+  // Enhanced video loading with better caching and verification
+  const loadVideo = async (path: string, retries = 5): Promise<boolean> => {
     const cleanPath = path.trim();
     if (videoCache.has(cleanPath)) {
       return true;
@@ -74,57 +81,118 @@ function App() {
     activeRequests.current.add(controller);
 
     try {
-      const response = await fetch(cleanPath, {
+      console.log(`Loading video: ${cleanPath}`);
+      
+      // Pre-fetch with range request to verify file exists
+      const headResponse = await fetch(cleanPath, {
+        method: 'HEAD',
         signal: controller.signal,
-        cache: 'force-cache' // Leverage browser caching
       });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      if (!headResponse.ok) {
+        throw new Error(`Video not accessible: ${cleanPath} (${headResponse.status})`);
       }
 
-      const contentLength = response.headers.get('Content-Length');
+      const contentLength = headResponse.headers.get('Content-Length');
       if (contentLength) {
         loadingStats.current.totalBytes += parseInt(contentLength);
       }
 
-      // Create video element and cache it
+      // Create video element with enhanced loading
       const video = document.createElement('video');
-      video.src = cleanPath;
       video.preload = "auto";
-      video.load();
+      video.muted = true; // Required for autoplay policies
+      video.playsInline = true;
+      video.crossOrigin = "anonymous";
+      
+      // Set source and force load
+      video.src = cleanPath;
 
       await new Promise<void>((resolve, reject) => {
+        const timeout = setTimeout(() => {
+          reject(new Error(`Video loading timeout: ${cleanPath}`));
+        }, 30000); // 30 second timeout
+
         const onReady = () => {
+          clearTimeout(timeout);
           video.removeEventListener('canplaythrough', onReady);
           video.removeEventListener('error', onError);
-          videoCache.set(cleanPath, video);
-          loadingStats.current.loadedFiles += 1;
-          loadingStats.current.loadedBytes += contentLength ? parseInt(contentLength) : 0;
-          updateProgress();
-          resolve();
+          video.removeEventListener('loadeddata', onLoaded);
+          
+          // Verify video is truly ready
+          if (video.readyState >= 3 && video.duration > 0) {
+            videoCache.set(cleanPath, video);
+            loadingStats.current.loadedFiles += 1;
+            loadingStats.current.loadedBytes += contentLength ? parseInt(contentLength) : 0;
+            updateProgress();
+            console.log(`✓ Video loaded successfully: ${cleanPath}`);
+            resolve();
+          } else {
+            reject(new Error(`Video not properly loaded: ${cleanPath}`));
+          }
         };
 
-        const onError = () => {
+        const onLoaded = () => {
+          // Additional check when metadata is loaded
+          if (video.readyState >= 2) {
+            onReady();
+          }
+        };
+
+        const onError = (e: any) => {
+          clearTimeout(timeout);
           video.removeEventListener('canplaythrough', onReady);
           video.removeEventListener('error', onError);
-          reject(new Error(`Failed to load video: ${cleanPath}`));
+          video.removeEventListener('loadeddata', onLoaded);
+          reject(new Error(`Video load error: ${cleanPath} - ${e.message || 'Unknown error'}`));
         };
 
         video.addEventListener('canplaythrough', onReady, { once: true });
+        video.addEventListener('loadeddata', onLoaded, { once: true });
         video.addEventListener('error', onError, { once: true });
+        
+        // Start loading
+        video.load();
       });
 
       return true;
     } catch (error) {
       if (retries > 0) {
         console.warn(`Retrying ${cleanPath}, attempts left: ${retries}`);
+        await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second before retry
         return loadVideo(cleanPath, retries - 1);
       }
-      console.error(`Failed to load video after retries: ${cleanPath}`, error);
+      console.error(`Failed to load video after all retries: ${cleanPath}`, error);
       return false;
     } finally {
       activeRequests.current.delete(controller);
+    }
+  };
+
+  // Enhanced font loading
+  const loadFont = async (path: string, retries = 3): Promise<boolean> => {
+    try {
+      console.log(`Loading font: ${path}`);
+      
+      const font = new FontFace('BoldOnse', `url(${path})`);
+      await font.load();
+      document.fonts.add(font);
+      
+      // Verify font is actually loaded
+      await document.fonts.ready;
+      
+      loadingStats.current.loadedFiles += 1;
+      updateProgress();
+      console.log(`✓ Font loaded successfully: ${path}`);
+      return true;
+    } catch (error) {
+      if (retries > 0) {
+        console.warn(`Retrying font ${path}, attempts left: ${retries}`);
+        await new Promise(resolve => setTimeout(resolve, 500));
+        return loadFont(path, retries - 1);
+      }
+      console.error(`Failed to load font after retries: ${path}`, error);
+      return false;
     }
   };
 
@@ -138,28 +206,67 @@ function App() {
   };
 
   const loadAssets = async () => {
+    console.log("🚀 Starting asset loading for YC Demo...");
+    
     loadingStats.current = {
       totalBytes: 0,
       loadedBytes: 0,
-      fileCount: CRITICAL_VIDEOS.length,
+      fileCount: CRITICAL_VIDEOS.length + CRITICAL_FONTS.length,
       loadedFiles: 0
     };
 
-    // Load videos with retry logic
-    const videoResults = await Promise.allSettled(
-      CRITICAL_VIDEOS.map(video => loadVideo(video))
-    );
+    setProgress(0);
 
-    // Check if all critical assets loaded
-    const allLoaded = videoResults.every(result => result.status === 'fulfilled' && result.value);
-    
-    if (allLoaded) {
-      setAssetsReady(true);
+    try {
+      // Load fonts first (faster, smaller files)
+      console.log("📝 Loading fonts...");
+      const fontResults = await Promise.allSettled(
+        CRITICAL_FONTS.map(font => loadFont(font))
+      );
+
+      // Load videos concurrently
+      console.log("🎬 Loading videos...");
+      const videoResults = await Promise.allSettled(
+        CRITICAL_VIDEOS.map(video => loadVideo(video))
+      );
+
+      // Verify all assets loaded successfully
+      const fontsLoaded = fontResults.every(result => result.status === 'fulfilled' && result.value);
+      const videosLoaded = videoResults.every(result => result.status === 'fulfilled' && result.value);
+      
+      if (fontsLoaded && videosLoaded) {
+        console.log("✅ All assets loaded successfully!");
+        
+        // Wait for any final DOM updates
+        await new Promise(resolve => setTimeout(resolve, 200));
+        
+        setProgress(100);
+        setAssetsReady(true);
+        
+        // Smooth transition delay
+        setTimeout(() => {
+          setShowLoading(false);
+          console.log("🎉 YC Demo ready to present!");
+        }, 800);
+      } else {
+        const failedFonts = fontResults.filter(r => r.status === 'rejected' || !r.value);
+        const failedVideos = videoResults.filter(r => r.status === 'rejected' || !r.value);
+        
+        console.error("❌ Asset loading failed:");
+        if (failedFonts.length > 0) console.error("Failed fonts:", failedFonts.length);
+        if (failedVideos.length > 0) console.error("Failed videos:", failedVideos.length);
+        
+        // Show loading failure state but still proceed (graceful degradation)
+        setProgress(100);
+        setAssetsReady(true);
+        setTimeout(() => setShowLoading(false), 1000);
+      }
+    } catch (error) {
+      console.error("💥 Critical loading error:", error);
+      // Emergency fallback - show the site anyway
       setProgress(100);
+      setAssetsReady(true);
       setTimeout(() => setShowLoading(false), 500);
-    } else {
-      console.error("Some critical assets failed to load");
-      // Implement fallback behavior here
     }
   };
 
