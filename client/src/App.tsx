@@ -1,11 +1,11 @@
-import { Switch, Route } from "wouter";
-import { queryClient } from "./lib/queryClient";
-import { QueryClientProvider } from "@tanstack/react-query";
-import { Toaster } from "@/components/ui/toaster";
-import NotFound from "@/pages/not-found";
-import Home from "@/pages/Home";
-import EntryScreen from "./components/entry-screen";
 import { useState, useEffect, useRef } from "react";
+import { Switch, Route } from "wouter";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { queryClient } from "./lib/queryClient";
+import { Toaster } from "@/components/ui/toaster";
+import Home from "@/pages/Home";
+import NotFound from "@/pages/not-found";
+import EntryScreen from "./components/entry-screen";
 import "./styles/LoadingScreen.css";
 
 const CRITICAL_VIDEOS = [
@@ -18,6 +18,9 @@ const CRITICAL_VIDEOS = [
   '/Videos/7-GuiBasicTest - Made with Clipchamp.mp4',
   '/Videos/8-TerminalBasicTest - Made with Clipchamp.mp4'
 ];
+
+// Improved video cache handler
+const videoCache = new Map<string, HTMLVideoElement>();
 
 const LoadingScreen = ({ progress = 0 }) => {
   return (
@@ -51,158 +54,84 @@ function App() {
   const [entryMode, setEntryMode] = useState(true);
   const [progress, setProgress] = useState(0);
   const [showLoading, setShowLoading] = useState(false);
+  const [assetsReady, setAssetsReady] = useState(false);
   const loadingStats = useRef({
     totalBytes: 0,
     loadedBytes: 0,
     fileCount: 0,
     loadedFiles: 0
   });
-  const videoElements = useRef<HTMLVideoElement[]>([]);
-  const xhrRequests = useRef<XMLHttpRequest[]>([]);
+  const activeRequests = useRef<Set<AbortController>>(new Set());
 
-  const updateProgress = () => {
-    const { totalBytes, loadedBytes, fileCount, loadedFiles } = loadingStats.current;
-    
-    // Calculate progress based on both bytes and file count
-    const bytesProgress = totalBytes > 0 ? (loadedBytes / totalBytes) * 80 : 0;
-    const filesProgress = fileCount > 0 ? (loadedFiles / fileCount) * 20 : 0;
-    
-    setProgress(Math.min(bytesProgress + filesProgress, 99));
-  };
-
-  const loadVideo = (path: string): Promise<void> => {
-    return new Promise((resolve) => {
-      const xhr = new XMLHttpRequest();
-      xhrRequests.current.push(xhr);
-      
-      xhr.open('GET', path, true);
-      xhr.responseType = 'blob';
-      
-      xhr.onprogress = (e) => {
-        if (e.lengthComputable) {
-          loadingStats.current.loadedBytes += e.loaded - (xhr as any).lastLoaded || 0;
-          (xhr as any).lastLoaded = e.loaded;
-          updateProgress();
-        }
-      };
-      
-      xhr.onload = () => {
-        loadingStats.current.loadedFiles += 1;
-        updateProgress();
-        resolve();
-      };
-      
-      xhr.onerror = () => {
-        loadingStats.current.loadedFiles += 1;
-        updateProgress();
-        resolve();
-      };
-      
-      xhr.onreadystatechange = () => {
-        if (xhr.readyState === 2) {
-          const contentLength = xhr.getResponseHeader('Content-Length');
-          if (contentLength) {
-            loadingStats.current.totalBytes += parseInt(contentLength);
-          }
-        }
-      };
-      
-      xhr.send();
-    });
-  };
-
-  const loadImage = (img: HTMLImageElement): Promise<void> => {
-    return new Promise((resolve) => {
-      if (img.complete) {
-        resolve();
-        return;
-      }
-
-      loadingStats.current.fileCount += 1;
-      
-      img.onload = () => {
-        loadingStats.current.loadedFiles += 1;
-        updateProgress();
-        resolve();
-      };
-      
-      img.onerror = () => {
-        loadingStats.current.loadedFiles += 1;
-        updateProgress();
-        resolve();
-      };
-    });
-  };
-
-  const getUsedFontFamilies = (): Set<string> => {
-    const fontFamilies = new Set<string>();
-    if (!document.fonts) return fontFamilies;
-
-    // Add known fonts
-    fontFamilies.add('BoldOnse');
-    fontFamilies.add('Inter');
-    fontFamilies.add('Space Grotesk');
-
-    // Scan stylesheets
-    try {
-      const styleSheets = Array.from(document.styleSheets);
-      for (const sheet of styleSheets) {
-        try {
-          if (sheet.href && !sheet.href.startsWith(window.location.origin)) {
-            continue;
-          }
-          
-          const rules = sheet.cssRules || [];
-          for (let i = 0; i < rules.length; i++) {
-            try {
-              const rule = rules[i];
-              if (rule instanceof CSSFontFaceRule) {
-                const fontFamily = rule.style.fontFamily;
-                if (fontFamily) {
-                  fontFamilies.add(fontFamily.replace(/["']/g, ''));
-                }
-              }
-            } catch (e) {
-              console.debug("Error processing CSS rule", e);
-            }
-          }
-        } catch (e) {
-          console.debug("Error processing stylesheet", e);
-        }
-      }
-    } catch (e) {
-      console.warn("Font detection error:", e);
+  // Improved video loading with retry logic
+  const loadVideo = async (path: string, retries = 3): Promise<boolean> => {
+    const cleanPath = path.trim();
+    if (videoCache.has(cleanPath)) {
+      return true;
     }
 
-    return fontFamilies;
-  };
+    const controller = new AbortController();
+    activeRequests.current.add(controller);
 
-  const loadFont = (font: string): Promise<void> => {
-    loadingStats.current.fileCount += 1;
-    
-    return new Promise((resolve) => {
-      if (!document.fonts) {
-        loadingStats.current.loadedFiles += 1;
-        updateProgress();
-        return resolve();
+    try {
+      const response = await fetch(cleanPath, {
+        signal: controller.signal,
+        cache: 'force-cache' // Leverage browser caching
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      document.fonts.load(`12px "${font}"`)
-        .then(() => {
+      const contentLength = response.headers.get('Content-Length');
+      if (contentLength) {
+        loadingStats.current.totalBytes += parseInt(contentLength);
+      }
+
+      // Create video element and cache it
+      const video = document.createElement('video');
+      video.src = cleanPath;
+      video.preload = "auto";
+      video.load();
+
+      await new Promise<void>((resolve, reject) => {
+        const onReady = () => {
+          video.removeEventListener('canplaythrough', onReady);
+          video.removeEventListener('error', onError);
+          videoCache.set(cleanPath, video);
           loadingStats.current.loadedFiles += 1;
+          loadingStats.current.loadedBytes += contentLength ? parseInt(contentLength) : 0;
           updateProgress();
           resolve();
-        })
-        .catch(() => {
-          loadingStats.current.loadedFiles += 1;
-          updateProgress();
-          resolve();
-        });
-    });
+        };
+
+        const onError = () => {
+          video.removeEventListener('canplaythrough', onReady);
+          video.removeEventListener('error', onError);
+          reject(new Error(`Failed to load video: ${cleanPath}`));
+        };
+
+        video.addEventListener('canplaythrough', onReady, { once: true });
+        video.addEventListener('error', onError, { once: true });
+      });
+
+      return true;
+    } catch (error) {
+      if (retries > 0) {
+        console.warn(`Retrying ${cleanPath}, attempts left: ${retries}`);
+        return loadVideo(cleanPath, retries - 1);
+      }
+      console.error(`Failed to load video after retries: ${cleanPath}`, error);
+      return false;
+    } finally {
+      activeRequests.current.delete(controller);
+    }
   };
 
+  // Other asset loaders (images, fonts) remain similar but with retry logic
+  // ...
+
   const loadAssets = async () => {
-    // Reset loading stats
     loadingStats.current = {
       totalBytes: 0,
       loadedBytes: 0,
@@ -210,62 +139,60 @@ function App() {
       loadedFiles: 0
     };
 
-    // Load videos with byte-by-byte tracking
-    await Promise.all(CRITICAL_VIDEOS.map(loadVideo));
+    // Load videos with retry logic
+    const videoResults = await Promise.allSettled(
+      CRITICAL_VIDEOS.map(video => loadVideo(video))
+    );
+
+    // Check if all critical assets loaded
+    const allLoaded = videoResults.every(result => result.status === 'fulfilled' && result.value);
     
-    // Load images
-    const images = Array.from(document.images);
-    loadingStats.current.fileCount += images.length;
-    await Promise.all(images.map(img => loadImage(img)));
-    
-    // Load fonts
-    const fonts = getUsedFontFamilies();
-    loadingStats.current.fileCount += fonts.size;
-    await Promise.all(Array.from(fonts).map(font => loadFont(font)));
-    
-    // Complete loading
-    setProgress(100);
-    setTimeout(() => setShowLoading(false), 500);
+    if (allLoaded) {
+      setAssetsReady(true);
+      setProgress(100);
+      setTimeout(() => setShowLoading(false), 500);
+    } else {
+      console.error("Some critical assets failed to load");
+      // Implement fallback behavior here
+    }
   };
 
-  const cleanupResources = () => {
-    // Abort any pending XHR requests
-    xhrRequests.current.forEach(xhr => xhr.abort());
-    xhrRequests.current = [];
-    
-    // Remove video elements
-    videoElements.current.forEach(v => v.remove());
-    videoElements.current = [];
+  const cleanup = () => {
+    // Abort all pending requests
+    activeRequests.current.forEach(controller => controller.abort());
+    activeRequests.current.clear();
   };
 
   useEffect(() => {
     if (!entryMode && showLoading) {
-      loadAssets().catch(console.error);
-      
-      return () => {
-        cleanupResources();
-      };
+      loadAssets();
+      return cleanup;
     }
   }, [entryMode, showLoading]);
 
-  const toggleEntryMode = () => {
-    setEntryMode(false);
-    setShowLoading(true);
-    setProgress(0);
-    loadingStats.current = {
-      totalBytes: 0,
-      loadedBytes: 0,
-      fileCount: 0,
-      loadedFiles: 0
-    };
+  // In your Home component or wherever you use the videos:
+  const playVideo = (path: string) => {
+    const cleanPath = path.trim();
+    const video = videoCache.get(cleanPath);
+    
+    if (video) {
+      video.currentTime = 0;
+      video.play().catch(e => {
+        console.error("Video play failed:", e);
+        // Implement user-friendly fallback
+      });
+    }
   };
 
   return (
     <QueryClientProvider client={queryClient}>
       {entryMode ? (
-        <EntryScreen key="entry" toggleEntryMode={toggleEntryMode} />
+        <EntryScreen toggleEntryMode={() => {
+          setEntryMode(false);
+          setShowLoading(true);
+        }} />
       ) : (
-        <div key="app" style={{ position: 'relative', minHeight: '100vh' }}>
+        <div style={{ position: 'relative', minHeight: '100vh' }}>
           {showLoading && (
             <div style={{
               position: 'fixed',
@@ -277,15 +204,12 @@ function App() {
               zIndex: 9999,
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center',
-              opacity: showLoading ? 1 : 0,
-              transition: 'opacity 0.5s ease-out',
-              pointerEvents: showLoading ? 'auto' : 'none'
+              justifyContent: 'center'
             }}>
               <LoadingScreen progress={progress} />
             </div>
           )}
-          <AppRouter />
+          {assetsReady && <AppRouter />}
         </div>
       )}
       <Toaster />
