@@ -128,8 +128,14 @@ function App() {
     }
   };
 
-  // Other asset loaders (images, fonts) remain similar but with retry logic
-  // ...
+  // Update progress based on loaded files
+  const updateProgress = () => {
+    const { fileCount, loadedFiles } = loadingStats.current;
+    if (fileCount > 0) {
+      const progressPercent = (loadedFiles / fileCount) * 100;
+      setProgress(progressPercent);
+    }
+  };
 
   const loadAssets = async () => {
     loadingStats.current = {
