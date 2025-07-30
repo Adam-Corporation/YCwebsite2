@@ -53,47 +53,144 @@ function App() {
   const [showLoading, setShowLoading] = useState(false);
   const assetsToLoad = useRef<Set<string>>(new Set());
   const loadedAssets = useRef<Set<string>>(new Set());
-  const progressInterval = useRef<NodeJS.Timeout>();
+  const videoElements = useRef<HTMLVideoElement[]>([]);
+
+  // Improved asset loading with better error handling
+  const loadAssets = async () => {
+    // Load videos first since they're the largest
+    await loadVideos();
+    
+    // Then load other assets
+    await Promise.all([
+      loadImages(),
+      loadFonts()
+    ]);
+    
+    completeLoading();
+  };
+
+  const loadVideos = async () => {
+    const videoPromises = CRITICAL_VIDEOS.map(videoPath => {
+      return new Promise<void>((resolve) => {
+        const cleanPath = videoPath.trim();
+        const video = document.createElement('video');
+        video.src = cleanPath;
+        video.preload = "auto";
+        
+        video.addEventListener('loadeddata', () => {
+          handleAssetLoad('video', cleanPath);
+          resolve();
+        });
+        
+        video.addEventListener('canplaythrough', () => {
+          handleAssetLoad('video', cleanPath);
+          resolve();
+        });
+        
+        video.addEventListener('error', () => {
+          console.warn(`Failed to load video: ${cleanPath}`);
+          handleAssetLoad('video', cleanPath); // Still count as loaded to avoid blocking
+          resolve();
+        });
+        
+        video.load();
+        videoElements.current.push(video);
+      });
+    });
+    
+    await Promise.all(videoPromises);
+  };
+
+  const loadImages = async () => {
+    const imageElements = Array.from(document.images);
+    const imagePromises = imageElements
+      .filter(img => !img.complete && img.src)
+      .map(img => {
+        return new Promise<void>((resolve) => {
+          img.addEventListener('load', () => {
+            handleAssetLoad('image', img.src);
+            resolve();
+          });
+          
+          img.addEventListener('error', () => {
+            console.warn(`Failed to load image: ${img.src}`);
+            handleAssetLoad('image', img.src);
+            resolve();
+          });
+        });
+      });
+    
+    await Promise.all(imagePromises);
+  };
+
+  const loadFonts = async () => {
+    if (!document.fonts) return;
+
+    const fontFamilies = getUsedFontFamilies();
+    const fontPromises = Array.from(fontFamilies).map(font => {
+      return document.fonts.load(`12px "${font}"`)
+        .then(() => handleAssetLoad('font', font))
+        .catch(() => {
+          console.warn(`Failed to load font: ${font}`);
+          handleAssetLoad('font', font);
+        });
+    });
+    
+    await Promise.all(fontPromises);
+  };
 
   const getUsedFontFamilies = () => {
     const fontFamilies = new Set<string>();
     if (!document.fonts) return fontFamilies;
-
-    // 1. Hardcode your known fonts
+  
+    // 1. Add known/hardcoded fonts first
     fontFamilies.add('BoldOnse');
     fontFamilies.add('Inter');
     fontFamilies.add('Space Grotesk');
-
-    // 2. Safely scan accessible stylesheets
+  
+    // 2. Scan stylesheets safely
     try {
       const styleSheets = Array.from(document.styleSheets);
       for (const sheet of styleSheets) {
         try {
-          // Skip cross-origin sheets that would throw errors
+          // Skip cross-origin stylesheets that might throw security errors
           if (sheet.href && !sheet.href.startsWith(window.location.origin)) {
             continue;
           }
-          
-          const rules = sheet.cssRules || [];
-          for (const rule of rules) {
-            if (rule instanceof CSSFontFaceRule) {
-              const fontFamily = rule.style.fontFamily;
-              if (fontFamily) {
-                fontFamilies.add(fontFamily.replace(/["']/g, ''));
+  
+          // Safely access rules
+          let rules: CSSRuleList;
+          try {
+            rules = sheet.cssRules || sheet.rules || [];
+          } catch (e) {
+            console.debug("Cannot access stylesheet rules due to CORS");
+            continue;
+          }
+  
+          // Iterate through rules safely
+          for (let i = 0; i < rules.length; i++) {
+            try {
+              const rule = rules[i];
+              if (rule instanceof CSSFontFaceRule) {
+                const fontFamily = rule.style.fontFamily;
+                if (fontFamily) {
+                  fontFamilies.add(fontFamily.replace(/["']/g, ''));
+                }
               }
+            } catch (e) {
+              console.debug("Error processing CSS rule", e);
             }
           }
         } catch (e) {
-          console.debug("Skipping stylesheet due to security policy");
+          console.debug("Error processing stylesheet", e);
         }
       }
     } catch (e) {
       console.warn("Font detection error:", e);
     }
-
+  
     return fontFamilies;
   };
-
   const handleAssetLoad = (assetType: string, src: string) => {
     const assetKey = `${assetType}:${src}`;
     if (assetsToLoad.current.has(assetKey)) {
@@ -102,96 +199,57 @@ function App() {
     }
   };
 
-  const trackAssets = () => {
-    const videoElements: HTMLVideoElement[] = [];
-
-    // 1. Force load all critical videos
-    CRITICAL_VIDEOS.forEach(videoPath => {
-      const cleanPath = videoPath.trim();
-      assetsToLoad.current.add(`video:${cleanPath}`);
-      
-      const video = document.createElement('video');
-      video.src = cleanPath;
-      video.preload = "auto";
-      video.load();
-      
-      const handleLoad = () => {
-        handleAssetLoad('video', cleanPath);
-        video.removeEventListener('canplaythrough', handleLoad);
-        video.removeEventListener('error', handleLoad);
-      };
-      
-      video.addEventListener('canplaythrough', handleLoad);
-      video.addEventListener('error', handleLoad);
-      
-      document.body.appendChild(video);
-      videoElements.push(video);
-    });
-
-    // 2. Track images
-    Array.from(document.images).forEach((img) => {
-      if (!img.complete && img.src) {
-        assetsToLoad.current.add(`image:${img.src}`);
-        img.addEventListener('load', () => handleAssetLoad('image', img.src));
-        img.addEventListener('error', () => handleAssetLoad('image', img.src));
-      }
-    });
-
-    // 3. Track fonts
-    if (document.fonts) {
-      const fontsToCheck = getUsedFontFamilies();
-      fontsToCheck.forEach((font) => {
-        assetsToLoad.current.add(`font:${font}`);
-        document.fonts.load(`12px "${font}"`).then(
-          () => handleAssetLoad('font', font),
-          () => handleAssetLoad('font', font)
-        );
-      });
-    }
-
-    return () => {
-      videoElements.forEach(v => v.remove());
-    };
-  };
-
   const updateProgress = () => {
     const total = assetsToLoad.current.size;
     const loaded = loadedAssets.current.size;
     const actualProgress = total > 0 ? (loaded / total) * 100 : 100;
 
     setProgress(prev => {
-      const newProgress = Math.max(actualProgress, Math.min(prev + 2, 95));
-      return newProgress;
+      // Smooth progression - don't jump backwards
+      return Math.max(actualProgress, Math.min(prev + 2, 99));
     });
-
-    if (loaded >= total && total > 0) {
-      completeLoading();
-    }
   };
 
   const completeLoading = () => {
-    if (progressInterval.current) {
-      clearInterval(progressInterval.current);
-    }
     setProgress(100);
-    setTimeout(() => setShowLoading(false), 500);
+    // Small delay to ensure smooth transition
+    setTimeout(() => {
+      // Clean up video elements
+      videoElements.current.forEach(v => v.remove());
+      videoElements.current = [];
+      setShowLoading(false);
+    }, 500);
   };
 
   useEffect(() => {
     if (!entryMode && showLoading) {
-      const cleanup = trackAssets();
+      // Initialize all assets that need to be loaded
+      CRITICAL_VIDEOS.forEach(videoPath => {
+        assetsToLoad.current.add(`video:${videoPath.trim()}`);
+      });
 
-      if (assetsToLoad.current.size === 0) {
-        completeLoading();
-        return;
+      Array.from(document.images)
+        .filter(img => !img.complete && img.src)
+        .forEach(img => {
+          assetsToLoad.current.add(`image:${img.src}`);
+        });
+
+      if (document.fonts) {
+        getUsedFontFamilies().forEach(font => {
+          assetsToLoad.current.add(`font:${font}`);
+        });
       }
 
-      progressInterval.current = setInterval(updateProgress, 100);
-      const timeout = setTimeout(completeLoading, 20000);
+      // Start loading process
+      loadAssets().catch(console.error);
+
+      // Fallback timeout in case something hangs
+      const timeout = setTimeout(() => {
+        console.warn("Loading timeout reached, proceeding anyway");
+        completeLoading();
+      }, 30000); // 30 seconds timeout
 
       return () => {
-        cleanup();
-        if (progressInterval.current) clearInterval(progressInterval.current);
         clearTimeout(timeout);
       };
     }
@@ -221,11 +279,10 @@ function App() {
               backgroundColor: '#000',
               zIndex: 9999,
               display: 'flex',
-              flexDirection: 'column',
               alignItems: 'center',
               justifyContent: 'center',
-              transition: 'opacity 0.5s ease-out',
               opacity: showLoading ? 1 : 0,
+              transition: 'opacity 0.5s ease-out',
               pointerEvents: showLoading ? 'auto' : 'none'
             }}>
               <LoadingScreen progress={progress} />
