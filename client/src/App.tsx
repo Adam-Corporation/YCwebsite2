@@ -184,21 +184,52 @@ function App() {
     }
   };
 
-  // Since CSS is embedded in build like videos, just ensure fonts are ready
-  const waitForFontsOnly = async (): Promise<boolean> => {
+  // Wait for fonts AND ensure DOM elements have their styles actually applied
+  const waitForCompleteStyleApplication = async (): Promise<boolean> => {
     return new Promise((resolve) => {
-      if (document.fonts) {
-        document.fonts.ready.then(() => {
-          console.log("✅ All fonts loaded and rendered");
-          resolve(true);
-        });
-      } else {
-        // Fallback for browsers without Font Loading API
-        setTimeout(() => {
-          console.log("✅ Font loading complete (fallback)");
-          resolve(true);
-        }, 100);
-      }
+      const checkStylesApplied = () => {
+        // Check if key elements have their actual styles applied (not just default browser styles)
+        const videoCards = document.querySelectorAll('[class*="video"]');
+        const hasStyledElements = videoCards.length > 0;
+        
+        let allElementsStyled = true;
+        if (hasStyledElements) {
+          videoCards.forEach(card => {
+            const styles = getComputedStyle(card);
+            // Check for non-default styling that indicates CSS is applied
+            const hasCustomStyling = 
+              styles.backgroundColor !== 'rgba(0, 0, 0, 0)' ||
+              styles.borderRadius !== '0px' ||
+              styles.padding !== '0px' ||
+              styles.margin !== '0px' ||
+              styles.transform !== 'none' ||
+              styles.boxShadow !== 'none';
+            
+            if (!hasCustomStyling) {
+              allElementsStyled = false;
+            }
+          });
+        }
+        
+        if (allElementsStyled || !hasStyledElements) {
+          // Also wait for fonts to be ready
+          if (document.fonts) {
+            document.fonts.ready.then(() => {
+              console.log("✅ All styles applied and fonts rendered");
+              resolve(true);
+            });
+          } else {
+            console.log("✅ All styles applied");
+            resolve(true);
+          }
+        } else {
+          console.log("🎨 Waiting for styles to be applied to elements...");
+          setTimeout(checkStylesApplied, 100);
+        }
+      };
+      
+      // Start checking immediately
+      checkStylesApplied();
     });
   };
 
@@ -225,9 +256,9 @@ function App() {
       const videoResults = await Promise.allSettled(CRITICAL_VIDEOS.map(videoObj => loadVideo(videoObj)));
       const videosLoaded = videoResults.filter(r => r.status === 'fulfilled' && r.value).length;
 
-      // CSS is embedded in build, just wait for fonts
-      console.log("✍️ Ensuring fonts are rendered...");
-      await waitForFontsOnly();
+      // Wait for styles to be applied to DOM elements
+      console.log("🎨 Ensuring styles are applied to all elements...");
+      await waitForCompleteStyleApplication();
       loadingStats.current.loadedFiles += 1;
       updateProgress();
 
