@@ -1,0 +1,32 @@
+content.js:1 content js
+index-Bfze-ZKU.js:3922 🚀 Starting complete asset loading for YC Demo
+index-Bfze-ZKU.js:3922 📝 Loading fonts...
+index-Bfze-ZKU.js:3922 Loading font: /fonts/Boldonse-Regular.ttf
+index-Bfze-ZKU.js:3922 ✓ Font loaded successfully: /fonts/Boldonse-Regular.ttf
+index-Bfze-ZKU.js:3922 🎬 Loading embedded videos...
+index-Bfze-ZKU.js:3922 Loading embedded video: /Videos/1-HelloWorldv2.mp4
+index-Bfze-ZKU.js:3922 Loading embedded video: /Videos/2-MemoryTestv1.mp4
+index-Bfze-ZKU.js:3922 Loading embedded video: /Videos/3-ChatGPTFinalVersion.mp4
+index-Bfze-ZKU.js:3922 Loading embedded video: /Videos/4-GoogleFormsTestv2.mp4
+index-Bfze-ZKU.js:3922 Loading embedded video: /Videos/5-SignInTest - Made with Clipchamp.mp4
+index-Bfze-ZKU.js:3922 Loading embedded video: /Videos/6-TweetTest - Made with Clipchamp.mp4
+index-Bfze-ZKU.js:3922 Loading embedded video: /Videos/7-GuiBasicTest - Made with Clipchamp.mp4
+index-Bfze-ZKU.js:3922 Loading embedded video: /Videos/8-TerminalBasicTest - Made with Clipchamp.mp4
+index-Bfze-ZKU.js:3922 ✓ Embedded video ready: /Videos/1-HelloWorldv2.mp4
+index-Bfze-ZKU.js:3922 ✓ Embedded video ready: /Videos/2-MemoryTestv1.mp4
+index-Bfze-ZKU.js:3922 ✓ Embedded video ready: /Videos/3-ChatGPTFinalVersion.mp4
+index-Bfze-ZKU.js:3922 ✓ Embedded video ready: /Videos/4-GoogleFormsTestv2.mp4
+index-Bfze-ZKU.js:3922 ✓ Embedded video ready: /Videos/5-SignInTest - Made with Clipchamp.mp4
+index-Bfze-ZKU.js:3922 ✓ Embedded video ready: /Videos/6-TweetTest - Made with Clipchamp.mp4
+index-Bfze-ZKU.js:3922 ✓ Embedded video ready: /Videos/7-GuiBasicTest - Made with Clipchamp.mp4
+index-Bfze-ZKU.js:3922 ✓ Embedded video ready: /Videos/8-TerminalBasicTest - Made with Clipchamp.mp4
+index-Bfze-ZKU.js:3922 🎨 Ensuring complete render with all styles...
+index-Bfze-ZKU.js:3922 ⚠️ Complete render timeout - proceeding anyway
+_ @ index-Bfze-ZKU.js:3922
+index-Bfze-ZKU.js:3922 Debug: styles=false, dom=true, hasStyles=true
+index-Bfze-ZKU.js:3922 📊 Loading complete: 10/10 assets loaded
+index-Bfze-ZKU.js:3922    - Fonts: 1/1
+index-Bfze-ZKU.js:3922    - Videos: 8/8
+index-Bfze-ZKU.js:3922    - CSS: Fully rendered and painted
+index-Bfze-ZKU.js:3922 ✅ ALL assets AND complete styling verified - YC Demo ready!
+index-Bfze-ZKU.js:3922 🎉 Demo interface revealed with perfect styling!

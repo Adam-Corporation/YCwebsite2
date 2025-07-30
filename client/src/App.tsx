@@ -184,51 +184,52 @@ function App() {
     }
   };
 
-  // Ensure DOM is fully painted with all styles before showing interface
+  // Ensure DOM is fully painted with all styles - NEVER timeout, wait indefinitely
   const waitForCompleteRender = async (): Promise<boolean> => {
     return new Promise((resolve) => {
-      let attempts = 0;
-      const maxAttempts = 100; // 5 seconds max
-      
       const checkComplete = () => {
-        attempts++;
-        
-        // Check 1: All stylesheets loaded
+        // Check 1: All stylesheets loaded and accessible
         const stylesheets = Array.from(document.styleSheets);
         const stylesLoaded = stylesheets.length > 0 && stylesheets.every(sheet => {
           try {
-            return sheet.cssRules || sheet.rules;
+            const rules = sheet.cssRules || sheet.rules;
+            return rules && rules.length > 0;
           } catch {
             return false;
           }
         });
         
-        // Check 2: DOM is ready and painted
+        // Check 2: DOM is completely ready
         const domReady = document.readyState === 'complete';
         
-        // Check 3: Test if specific elements have proper styling
-        const testElement = document.querySelector('.video-card');
-        const hasStyles = testElement ? getComputedStyle(testElement).position !== '' : true;
+        // Check 3: Critical elements exist and have computed styles
+        const videoSection = document.querySelector('[class*="video"]');
+        const hasElements = videoSection !== null;
+        const hasComputedStyles = videoSection ? 
+          getComputedStyle(videoSection).display !== '' && 
+          getComputedStyle(videoSection).position !== '' : true;
         
-        // Check 4: Fonts are rendered (using font loading API if available)
-        const fontsReady = document.fonts ? document.fonts.ready : Promise.resolve();
+        // Check 4: Font loading complete
+        const fontsReadyPromise = document.fonts ? document.fonts.ready : Promise.resolve();
         
-        if (stylesLoaded && domReady && hasStyles) {
-          fontsReady.then(() => {
-            // Final check: Request animation frame to ensure paint is complete
+        // ALL checks must pass - no compromises for YC demo
+        if (stylesLoaded && domReady && hasElements && hasComputedStyles) {
+          console.log("✓ All core checks passed, verifying fonts...");
+          fontsReadyPromise.then(() => {
+            // Triple RAF to ensure complete paint cycle
             requestAnimationFrame(() => {
               requestAnimationFrame(() => {
-                console.log("✓ Complete rendering verified - DOM fully painted with styles");
-                resolve(true);
+                requestAnimationFrame(() => {
+                  console.log("✅ PERFECT: Complete rendering verified - DOM fully painted with styles");
+                  resolve(true);
+                });
               });
             });
           });
-        } else if (attempts >= maxAttempts) {
-          console.warn("⚠️ Complete render timeout - proceeding anyway");
-          console.log(`Debug: styles=${stylesLoaded}, dom=${domReady}, hasStyles=${hasStyles}`);
-          resolve(true);
         } else {
-          setTimeout(checkComplete, 50);
+          // Keep checking - NEVER give up for YC demo
+          console.log(`🔄 Still loading: styles=${stylesLoaded}, dom=${domReady}, elements=${hasElements}, computed=${hasComputedStyles}`);
+          setTimeout(checkComplete, 100);
         }
       };
       
@@ -297,19 +298,16 @@ function App() {
       } else {
         console.error(`❌ CRITICAL: Only ${totalLoaded}/${totalAssets} assets loaded!`);
         console.error("YC Demo requires ALL videos AND styles to be ready");
-        
-        setTimeout(() => {
-          console.warn("⚠️ Proceeding with incomplete loading - NOT RECOMMENDED for YC demo");
-          setAssetsReady(true);
-          setShowLoading(false);
-        }, 2000);
+        console.error("🚫 BLOCKING: Will NOT show interface until everything is perfect");
+        // NO timeout - keep loading screen visible until everything is ready
+        setAssetsReady(false);
       }
 
     } catch (error) {
       console.error("Critical loading error:", error);
-      setProgress(100);
-      setAssetsReady(true);
-      setTimeout(() => setShowLoading(false), 300);
+      console.error("🚫 ERROR: Will retry loading - YC demo requires perfection");
+      // Retry loading instead of proceeding with errors
+      setTimeout(() => loadAssets(), 1000);
     }
   };
 
