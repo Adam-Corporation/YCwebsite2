@@ -1,0 +1,65 @@
+chunk-WERSD76P.js?v=48f73714:21551 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+App.tsx:209 🚀 Starting asset loading for YC Demo...
+App.tsx:222 📝 Loading fonts...
+App.tsx:175 Loading font: /fonts/Boldonse-Regular.ttf
+App.tsx:186 ✓ Font loaded successfully: /fonts/Boldonse-Regular.ttf
+App.tsx:228 🎬 Loading videos...
+App.tsx:84 Loading video: /Videos/1-HelloWorldv2.mp4
+App.tsx:84 Loading video: /Videos/2-MemoryTestv1.mp4
+App.tsx:84 Loading video: /Videos/3-ChatGPTFinalVersion.mp4
+App.tsx:84 Loading video: /Videos/4-GoogleFormsTestv2.mp4
+App.tsx:84 Loading video: /Videos/5-SignInTest - Made with Clipchamp.mp4
+App.tsx:84 Loading video: /Videos/6-TweetTest - Made with Clipchamp.mp4
+App.tsx:84 Loading video: /Videos/7-GuiBasicTest - Made with Clipchamp.mp4
+App.tsx:84 Loading video: /Videos/8-TerminalBasicTest - Made with Clipchamp.mp4
+App.tsx:128 ✓ Video loaded successfully: /Videos/2-MemoryTestv1.mp4
+App.tsx:128 ✓ Video loaded successfully: /Videos/1-HelloWorldv2.mp4
+App.tsx:128 ✓ Video loaded successfully: /Videos/5-SignInTest - Made with Clipchamp.mp4
+App.tsx:161  Retrying /Videos/3-ChatGPTFinalVersion.mp4, attempts left: 5
+loadVideo @ App.tsx:161
+App.tsx:161  Retrying /Videos/4-GoogleFormsTestv2.mp4, attempts left: 5
+loadVideo @ App.tsx:161
+App.tsx:161  Retrying /Videos/6-TweetTest - Made with Clipchamp.mp4, attempts left: 5
+loadVideo @ App.tsx:161
+App.tsx:161  Retrying /Videos/8-TerminalBasicTest - Made with Clipchamp.mp4, attempts left: 5
+loadVideo @ App.tsx:161
+App.tsx:161  Retrying /Videos/7-GuiBasicTest - Made with Clipchamp.mp4, attempts left: 5
+loadVideo @ App.tsx:161
+App.tsx:84 Loading video: /Videos/3-ChatGPTFinalVersion.mp4
+App.tsx:84 Loading video: /Videos/4-GoogleFormsTestv2.mp4
+App.tsx:84 Loading video: /Videos/6-TweetTest - Made with Clipchamp.mp4
+App.tsx:84 Loading video: /Videos/8-TerminalBasicTest - Made with Clipchamp.mp4
+App.tsx:84 Loading video: /Videos/7-GuiBasicTest - Made with Clipchamp.mp4
+App.tsx:128 ✓ Video loaded successfully: /Videos/6-TweetTest - Made with Clipchamp.mp4
+App.tsx:128 ✓ Video loaded successfully: /Videos/3-ChatGPTFinalVersion.mp4
+App.tsx:128 ✓ Video loaded successfully: /Videos/4-GoogleFormsTestv2.mp4
+App.tsx:161  Retrying /Videos/4-GoogleFormsTestv2.mp4, attempts left: 4
+loadVideo @ App.tsx:161
+App.tsx:128 ✓ Video loaded successfully: /Videos/8-TerminalBasicTest - Made with Clipchamp.mp4
+App.tsx:161  Retrying /Videos/6-TweetTest - Made with Clipchamp.mp4, attempts left: 4
+loadVideo @ App.tsx:161
+App.tsx:161  Retrying /Videos/8-TerminalBasicTest - Made with Clipchamp.mp4, attempts left: 4
+loadVideo @ App.tsx:161
+App.tsx:161  Retrying /Videos/7-GuiBasicTest - Made with Clipchamp.mp4, attempts left: 4
+loadVideo @ App.tsx:161
+App.tsx:84 Loading video: /Videos/7-GuiBasicTest - Made with Clipchamp.mp4
+App.tsx:161  Retrying /Videos/3-ChatGPTFinalVersion.mp4, attempts left: 4
+loadVideo @ App.tsx:161
+App.tsx:161  Retrying /Videos/7-GuiBasicTest - Made with Clipchamp.mp4, attempts left: 3
+loadVideo @ App.tsx:161
+App.tsx:84 Loading video: /Videos/7-GuiBasicTest - Made with Clipchamp.mp4
+App.tsx:128 ✓ Video loaded successfully: /Videos/7-GuiBasicTest - Made with Clipchamp.mp4
+App.tsx:128 ✓ Video loaded successfully: /Videos/7-GuiBasicTest - Made with Clipchamp.mp4
+App.tsx:128 ✓ Video loaded successfully: /Videos/7-GuiBasicTest - Made with Clipchamp.mp4
+App.tsx:128 ✓ Video loaded successfully: /Videos/4-GoogleFormsTestv2.mp4
+App.tsx:128 ✓ Video loaded successfully: /Videos/7-GuiBasicTest - Made with Clipchamp.mp4
+App.tsx:238 ✅ All assets loaded successfully!
+App.tsx:249 🎉 YC Demo ready to present!
+App.tsx:128 ✓ Video loaded successfully: /Videos/6-TweetTest - Made with Clipchamp.mp4
+App.tsx:128 ✓ Video loaded successfully: /Videos/8-TerminalBasicTest - Made with Clipchamp.mp4
+App.tsx:128 ✓ Video loaded successfully: /Videos/3-ChatGPTFinalVersion.mp4
+[NEW] Explain Console errors by using Copilot in Edge: click
+         
+         to explain an error. 
+        Learn more
+        Don't show again
