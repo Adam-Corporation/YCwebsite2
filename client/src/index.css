@@ -10,6 +10,18 @@
 @tailwind components;
 @tailwind utilities;
 
+/* CRITICAL: Hide entire page until fully styled - prevents any unstyled flash */
+html.loading {
+  visibility: hidden !important;
+  opacity: 0 !important;
+}
+
+html.ready {
+  visibility: visible !important;
+  opacity: 1 !important;
+  transition: opacity 0.1s ease-in;
+}
+
 @layer base {
   :root {
     --background: 0 0% 0%; /* Black */

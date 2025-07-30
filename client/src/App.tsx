@@ -286,6 +286,8 @@ function App() {
         // Since everything is embedded, show immediately
         setShowLoading(false);
         console.log("🎉 Demo interface loaded - all assets embedded in build!");
+        
+        // Page will become visible via useEffect when showLoading becomes false
       } else {
         console.error(`❌ CRITICAL: Only ${totalLoaded}/${totalAssets} assets loaded!`);
         console.error("YC Demo requires ALL embedded assets to be ready");
@@ -308,11 +310,29 @@ function App() {
   };
 
   useEffect(() => {
+    // CRITICAL: Hide entire page until ready for YC demo
+    document.documentElement.className = 'loading';
+    
     if (!entryMode && showLoading) {
       loadAssets();
       return cleanup;
     }
   }, [entryMode, showLoading]);
+
+  useEffect(() => {
+    // Skip loading for entry mode but still ensure page is visible
+    if (entryMode) {
+      document.documentElement.className = 'ready';
+    }
+  }, [entryMode]);
+
+  useEffect(() => {
+    // When assets are ready, show the page
+    if (assetsReady && !showLoading) {
+      document.documentElement.className = 'ready';
+      console.log("🎯 Page is now visible - everything ready for YC demo!");
+    }
+  }, [assetsReady, showLoading]);
 
   // Embedded video playback - get from cache
   const playVideo = (path: string) => {
