@@ -26,6 +26,9 @@ This is a React application that was originally built in Replit Agent and is bei
   - Optimized for deployment reliability
   - Made loading progress completely honest - only advances when assets actually load
   - Fixed DOMException issues with CORS and video loading
+  - **CRITICAL IMPROVEMENT**: Embedded videos directly in build using ES6 imports
+  - Videos are now part of the bundled JavaScript - no separate file dependencies
+  - Eliminated all network timeout issues for YC demo deployment
 
 ## Migration Progress
 Currently working through `.local/state/replit/agent/progress_tracker.md` checklist.

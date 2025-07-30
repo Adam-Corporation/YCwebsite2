@@ -8,15 +8,26 @@ import NotFound from "@/pages/not-found";
 import EntryScreen from "./components/entry-screen";
 import "./styles/LoadingScreen.css";
 
+// Import videos directly - they'll be embedded in the build
+import video1 from '/Videos/1-HelloWorldv2.mp4';
+import video2 from '/Videos/2-MemoryTestv1.mp4';
+import video3 from '/Videos/3-ChatGPTFinalVersion.mp4';
+import video4 from '/Videos/4-GoogleFormsTestv2.mp4';
+import video5 from '/Videos/5-SignInTest - Made with Clipchamp.mp4';
+import video6 from '/Videos/6-TweetTest - Made with Clipchamp.mp4';
+import video7 from '/Videos/7-GuiBasicTest - Made with Clipchamp.mp4';
+import video8 from '/Videos/8-TerminalBasicTest - Made with Clipchamp.mp4';
+
+// Critical videos for YC demo - now embedded in build
 const CRITICAL_VIDEOS = [
-  '/Videos/1-HelloWorldv2.mp4',
-  '/Videos/2-MemoryTestv1.mp4',
-  '/Videos/3-ChatGPTFinalVersion.mp4',
-  '/Videos/4-GoogleFormsTestv2.mp4',
-  '/Videos/5-SignInTest - Made with Clipchamp.mp4',
-  '/Videos/6-TweetTest - Made with Clipchamp.mp4',
-  '/Videos/7-GuiBasicTest - Made with Clipchamp.mp4',
-  '/Videos/8-TerminalBasicTest - Made with Clipchamp.mp4'
+  { path: '/Videos/1-HelloWorldv2.mp4', src: video1 },
+  { path: '/Videos/2-MemoryTestv1.mp4', src: video2 },
+  { path: '/Videos/3-ChatGPTFinalVersion.mp4', src: video3 },
+  { path: '/Videos/4-GoogleFormsTestv2.mp4', src: video4 },
+  { path: '/Videos/5-SignInTest - Made with Clipchamp.mp4', src: video5 },
+  { path: '/Videos/6-TweetTest - Made with Clipchamp.mp4', src: video6 },
+  { path: '/Videos/7-GuiBasicTest - Made with Clipchamp.mp4', src: video7 },
+  { path: '/Videos/8-TerminalBasicTest - Made with Clipchamp.mp4', src: video8 }
 ];
 
 const CRITICAL_FONTS = [
@@ -94,39 +105,45 @@ function App() {
   });
   const activeRequests = useRef<Set<AbortController>>(new Set());
 
-  // Simple video verification - just check if files exist
-  const loadVideo = async (path: string): Promise<boolean> => {
-    const cleanPath = path.trim();
+  // Embedded video loading - instant since they're in the build
+  const loadVideo = async (videoObj: { path: string; src: string }): Promise<boolean> => {
+    const { path, src } = videoObj;
     
     try {
-      console.log(`Checking video: ${cleanPath}`);
+      console.log(`Loading embedded video: ${path}`);
       
-      // Simple fetch to verify file exists
-      const response = await fetch(cleanPath, { 
-        method: 'HEAD',
-        signal: AbortSignal.timeout(3000)
+      // Create video element with embedded source
+      const video = document.createElement('video');
+      video.src = src; // Use the imported embedded source
+      video.muted = true;
+      video.playsInline = true;
+      video.preload = "metadata";
+      
+      // Since the video is embedded, it loads instantly
+      await new Promise<void>((resolve) => {
+        const onReady = () => {
+          video.removeEventListener('loadedmetadata', onReady);
+          videoCache.set(path, video);
+          loadingStats.current.loadedFiles += 1;
+          updateProgress();
+          console.log(`✓ Embedded video ready: ${path}`);
+          resolve();
+        };
+        
+        video.addEventListener('loadedmetadata', onReady, { once: true });
+        video.load();
+        
+        // Fallback in case metadata loads immediately
+        setTimeout(() => {
+          if (!videoCache.has(path)) {
+            onReady();
+          }
+        }, 100);
       });
-
-      if (response.ok) {
-        // Create a minimal video element for the cache
-        const video = document.createElement('video');
-        video.src = cleanPath;
-        video.muted = true;
-        video.playsInline = true;
-        video.preload = "none"; // Don't preload anything
-        
-        videoCache.set(cleanPath, video);
-        loadingStats.current.loadedFiles += 1;
-        updateProgress();
-        
-        console.log(`✓ Video verified: ${cleanPath}`);
-        return true;
-      } else {
-        console.error(`Video not found: ${cleanPath} (${response.status})`);
-        return false;
-      }
+      
+      return true;
     } catch (error) {
-      console.error(`Video check failed: ${cleanPath}`, error);
+      console.error(`Embedded video loading failed: ${path}`, error);
       return false;
     }
   };
@@ -185,9 +202,9 @@ function App() {
       const fontResults = await Promise.allSettled(CRITICAL_FONTS.map(font => loadFont(font)));
       const fontsLoaded = fontResults.filter(r => r.status === 'fulfilled' && r.value).length;
       
-      // Load videos with honest progress tracking
-      console.log("🎬 Loading videos...");
-      const videoResults = await Promise.allSettled(CRITICAL_VIDEOS.map(video => loadVideo(video)));
+      // Load embedded videos with honest progress tracking
+      console.log("🎬 Loading embedded videos...");
+      const videoResults = await Promise.allSettled(CRITICAL_VIDEOS.map(videoObj => loadVideo(videoObj)));
       const videosLoaded = videoResults.filter(r => r.status === 'fulfilled' && r.value).length;
 
       const totalLoaded = fontsLoaded + videosLoaded;
@@ -202,7 +219,7 @@ function App() {
       setProgress(finalProgress);
 
       // Store successfully loaded assets
-      const loadedVideos = CRITICAL_VIDEOS.filter(v => videoCache.has(v));
+      const loadedVideos = CRITICAL_VIDEOS.filter(v => videoCache.has(v.path)).map(v => v.path);
       storeAssetState(loadedVideos, CRITICAL_FONTS);
 
       // CRITICAL: All videos must be available for YC demo
@@ -246,29 +263,28 @@ function App() {
     }
   }, [entryMode, showLoading]);
 
-  // Simple video playback - create fresh element each time
+  // Embedded video playback - get from cache
   const playVideo = (path: string) => {
     const cleanPath = path.trim();
+    let video = videoCache.get(cleanPath);
     
-    console.log(`Playing video: ${cleanPath}`);
-    
-    // Create fresh video element for reliable playback
-    const video = document.createElement('video');
-    video.src = cleanPath;
-    video.muted = true;
-    video.playsInline = true;
-    video.controls = true;
-    video.autoplay = true;
-    
-    // Replace any existing video players
-    const existingVideo = document.querySelector('video[data-playing="true"]');
-    if (existingVideo) {
-      existingVideo.remove();
+    if (!video) {
+      // Fallback: find the embedded source
+      const videoObj = CRITICAL_VIDEOS.find(v => v.path === cleanPath);
+      if (videoObj) {
+        video = document.createElement('video');
+        video.src = videoObj.src;
+        video.muted = true;
+        video.playsInline = true;
+        videoCache.set(cleanPath, video);
+      } else {
+        console.error(`Video not found in embedded sources: ${cleanPath}`);
+        return;
+      }
     }
     
-    video.setAttribute('data-playing', 'true');
-    document.body.appendChild(video);
-    
+    console.log(`Playing embedded video: ${cleanPath}`);
+    video.currentTime = 0;
     video.play().catch(e => {
       console.error("Video play failed:", e);
     });

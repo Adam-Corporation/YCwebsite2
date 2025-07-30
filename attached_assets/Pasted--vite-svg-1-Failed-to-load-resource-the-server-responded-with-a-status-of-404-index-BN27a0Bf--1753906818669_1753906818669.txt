@@ -1,0 +1,44 @@
+/vite.svg:1   Failed to load resource: the server responded with a status of 404 ()
+index-BN27a0Bf.js:3922 🚀 Starting honest asset loading for YC Demo
+index-BN27a0Bf.js:3922 📝 Loading fonts...
+index-BN27a0Bf.js:3922 Loading font: /fonts/Boldonse-Regular.ttf
+index-BN27a0Bf.js:3922 ✓ Font loaded successfully: /fonts/Boldonse-Regular.ttf
+index-BN27a0Bf.js:3922 🎬 Loading videos...
+index-BN27a0Bf.js:3922 Checking video: /Videos/1-HelloWorldv2.mp4
+index-BN27a0Bf.js:3922 Checking video: /Videos/2-MemoryTestv1.mp4
+index-BN27a0Bf.js:3922 Checking video: /Videos/3-ChatGPTFinalVersion.mp4
+index-BN27a0Bf.js:3922 Checking video: /Videos/4-GoogleFormsTestv2.mp4
+index-BN27a0Bf.js:3922 Checking video: /Videos/5-SignInTest - Made with Clipchamp.mp4
+index-BN27a0Bf.js:3922 Checking video: /Videos/6-TweetTest - Made with Clipchamp.mp4
+index-BN27a0Bf.js:3922 Checking video: /Videos/7-GuiBasicTest - Made with Clipchamp.mp4
+index-BN27a0Bf.js:3922 Checking video: /Videos/8-TerminalBasicTest - Made with Clipchamp.mp4
+index-BN27a0Bf.js:3922  Video check failed: /Videos/1-HelloWorldv2.mp4 TimeoutError: signal timed out
+c @ index-BN27a0Bf.js:3922
+index-BN27a0Bf.js:3922  Video check failed: /Videos/2-MemoryTestv1.mp4 TimeoutError: signal timed out
+c @ index-BN27a0Bf.js:3922
+index-BN27a0Bf.js:3922  Video check failed: /Videos/3-ChatGPTFinalVersion.mp4 TimeoutError: signal timed out
+c @ index-BN27a0Bf.js:3922
+index-BN27a0Bf.js:3922  Video check failed: /Videos/4-GoogleFormsTestv2.mp4 TimeoutError: signal timed out
+c @ index-BN27a0Bf.js:3922
+index-BN27a0Bf.js:3922  Video check failed: /Videos/5-SignInTest - Made with Clipchamp.mp4 TimeoutError: signal timed out
+c @ index-BN27a0Bf.js:3922
+index-BN27a0Bf.js:3922  Video check failed: /Videos/6-TweetTest - Made with Clipchamp.mp4 TimeoutError: signal timed out
+c @ index-BN27a0Bf.js:3922
+index-BN27a0Bf.js:3922  Video check failed: /Videos/7-GuiBasicTest - Made with Clipchamp.mp4 TimeoutError: signal timed out
+c @ index-BN27a0Bf.js:3922
+index-BN27a0Bf.js:3922  Video check failed: /Videos/8-TerminalBasicTest - Made with Clipchamp.mp4 TimeoutError: signal timed out
+c @ index-BN27a0Bf.js:3922
+index-BN27a0Bf.js:3922 📊 Loading complete: 1/9 assets loaded
+index-BN27a0Bf.js:3922    - Fonts: 1/1
+index-BN27a0Bf.js:3922    - Videos: 0/8
+index-BN27a0Bf.js:3922  ❌ CRITICAL: Only 0/8 videos loaded!
+p @ index-BN27a0Bf.js:3922
+index-BN27a0Bf.js:3922  YC Demo requires ALL videos to be available
+p @ index-BN27a0Bf.js:3922
+index-BN27a0Bf.js:3922  ⚠️ Proceeding with incomplete video set - NOT RECOMMENDED for YC demo
+(anonymous) @ index-BN27a0Bf.js:3922
+[NEW] Explain Console errors by using Copilot in Edge: click
+         
+         to explain an error. 
+        Learn more
+        Don't show again
