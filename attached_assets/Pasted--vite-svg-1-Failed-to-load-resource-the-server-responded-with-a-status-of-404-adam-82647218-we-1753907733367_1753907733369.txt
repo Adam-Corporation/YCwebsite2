@@ -1,0 +1,31 @@
+/vite.svg:1  Failed to load resource: the server responded with a status of 404 ()
+adam-82647218.web.app/:1 Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received
+adam-82647218.web.app/:1 Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received
+adam-82647218.web.app/:1 Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received
+adam-82647218.web.app/:1 Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received
+index-BBV4FPaS.js:3922 🚀 Starting honest asset loading for YC Demo
+index-BBV4FPaS.js:3922 📝 Loading fonts...
+index-BBV4FPaS.js:3922 Loading font: /fonts/Boldonse-Regular.ttf
+index-BBV4FPaS.js:3922 ✓ Font loaded successfully: /fonts/Boldonse-Regular.ttf
+index-BBV4FPaS.js:3922 🎬 Loading embedded videos...
+index-BBV4FPaS.js:3922 Loading embedded video: /Videos/1-HelloWorldv2.mp4
+index-BBV4FPaS.js:3922 Loading embedded video: /Videos/2-MemoryTestv1.mp4
+index-BBV4FPaS.js:3922 Loading embedded video: /Videos/3-ChatGPTFinalVersion.mp4
+index-BBV4FPaS.js:3922 Loading embedded video: /Videos/4-GoogleFormsTestv2.mp4
+index-BBV4FPaS.js:3922 Loading embedded video: /Videos/5-SignInTest - Made with Clipchamp.mp4
+index-BBV4FPaS.js:3922 Loading embedded video: /Videos/6-TweetTest - Made with Clipchamp.mp4
+index-BBV4FPaS.js:3922 Loading embedded video: /Videos/7-GuiBasicTest - Made with Clipchamp.mp4
+index-BBV4FPaS.js:3922 Loading embedded video: /Videos/8-TerminalBasicTest - Made with Clipchamp.mp4
+index-BBV4FPaS.js:3922 ✓ Embedded video ready: /Videos/1-HelloWorldv2.mp4
+index-BBV4FPaS.js:3922 ✓ Embedded video ready: /Videos/2-MemoryTestv1.mp4
+index-BBV4FPaS.js:3922 ✓ Embedded video ready: /Videos/3-ChatGPTFinalVersion.mp4
+index-BBV4FPaS.js:3922 ✓ Embedded video ready: /Videos/4-GoogleFormsTestv2.mp4
+index-BBV4FPaS.js:3922 ✓ Embedded video ready: /Videos/5-SignInTest - Made with Clipchamp.mp4
+index-BBV4FPaS.js:3922 ✓ Embedded video ready: /Videos/6-TweetTest - Made with Clipchamp.mp4
+index-BBV4FPaS.js:3922 ✓ Embedded video ready: /Videos/7-GuiBasicTest - Made with Clipchamp.mp4
+index-BBV4FPaS.js:3922 ✓ Embedded video ready: /Videos/8-TerminalBasicTest - Made with Clipchamp.mp4
+index-BBV4FPaS.js:3922 📊 Loading complete: 9/9 assets loaded
+index-BBV4FPaS.js:3922    - Fonts: 1/1
+index-BBV4FPaS.js:3922    - Videos: 8/8
+index-BBV4FPaS.js:3922 ✅ ALL videos verified - YC Demo ready for presentation!
+index-BBV4FPaS.js:3922 🎉 Demo interface loaded with all videos!

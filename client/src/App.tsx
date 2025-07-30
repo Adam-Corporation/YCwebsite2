@@ -184,13 +184,45 @@ function App() {
     }
   };
 
+  // Ensure all stylesheets are loaded before showing interface
+  const waitForStylesheets = async (): Promise<boolean> => {
+    return new Promise((resolve) => {
+      const checkStyles = () => {
+        const stylesheets = Array.from(document.styleSheets);
+        const allLoaded = stylesheets.every(sheet => {
+          try {
+            // Try to access rules to ensure CSS is loaded
+            return sheet.cssRules || sheet.rules;
+          } catch {
+            return false;
+          }
+        });
+        
+        if (allLoaded && stylesheets.length > 0) {
+          console.log("✓ All stylesheets loaded and parsed");
+          resolve(true);
+        } else {
+          setTimeout(checkStyles, 50);
+        }
+      };
+      
+      checkStyles();
+      
+      // Timeout after 5 seconds
+      setTimeout(() => {
+        console.warn("CSS loading timeout - proceeding anyway");
+        resolve(true);
+      }, 5000);
+    });
+  };
+
   const loadAssets = async () => {
-    console.log("🚀 Starting honest asset loading for YC Demo");
+    console.log("🚀 Starting complete asset loading for YC Demo");
     
     loadingStats.current = {
       totalBytes: 0,
       loadedBytes: 0,
-      fileCount: CRITICAL_VIDEOS.length + CRITICAL_FONTS.length,
+      fileCount: CRITICAL_VIDEOS.length + CRITICAL_FONTS.length + 1, // +1 for CSS
       loadedFiles: 0
     };
 
@@ -202,19 +234,26 @@ function App() {
       const fontResults = await Promise.allSettled(CRITICAL_FONTS.map(font => loadFont(font)));
       const fontsLoaded = fontResults.filter(r => r.status === 'fulfilled' && r.value).length;
       
-      // Load embedded videos with honest progress tracking
+      // Load embedded videos
       console.log("🎬 Loading embedded videos...");
       const videoResults = await Promise.allSettled(CRITICAL_VIDEOS.map(videoObj => loadVideo(videoObj)));
       const videosLoaded = videoResults.filter(r => r.status === 'fulfilled' && r.value).length;
 
-      const totalLoaded = fontsLoaded + videosLoaded;
-      const totalAssets = CRITICAL_FONTS.length + CRITICAL_VIDEOS.length;
+      // Wait for ALL CSS to be loaded and parsed
+      console.log("🎨 Ensuring all CSS is loaded and styled...");
+      await waitForStylesheets();
+      loadingStats.current.loadedFiles += 1;
+      updateProgress();
+
+      const totalLoaded = fontsLoaded + videosLoaded + 1; // +1 for CSS
+      const totalAssets = CRITICAL_FONTS.length + CRITICAL_VIDEOS.length + 1;
       
       console.log(`📊 Loading complete: ${totalLoaded}/${totalAssets} assets loaded`);
       console.log(`   - Fonts: ${fontsLoaded}/${CRITICAL_FONTS.length}`);
       console.log(`   - Videos: ${videosLoaded}/${CRITICAL_VIDEOS.length}`);
+      console.log(`   - CSS: Fully loaded and parsed`);
 
-      // Set final progress based on actually loaded assets
+      // Set final progress
       const finalProgress = Math.min(100, (totalLoaded / totalAssets) * 100);
       setProgress(finalProgress);
 
@@ -222,21 +261,22 @@ function App() {
       const loadedVideos = CRITICAL_VIDEOS.filter(v => videoCache.has(v.path)).map(v => v.path);
       storeAssetState(loadedVideos, CRITICAL_FONTS);
 
-      // CRITICAL: All videos must be available for YC demo
-      if (videosLoaded === CRITICAL_VIDEOS.length) {
-        console.log("✅ ALL videos verified - YC Demo ready for presentation!");
+      // CRITICAL: All assets AND styles must be ready for YC demo
+      if (videosLoaded === CRITICAL_VIDEOS.length && totalLoaded === totalAssets) {
+        console.log("✅ ALL assets AND styles verified - YC Demo ready for presentation!");
         setAssetsReady(true);
+        
+        // Additional delay to ensure DOM is fully rendered with styles
         setTimeout(() => {
           setShowLoading(false);
-          console.log("🎉 Demo interface loaded with all videos!");
-        }, 500);
+          console.log("🎉 Demo interface loaded with perfect styling!");
+        }, 200);
       } else {
-        console.error(`❌ CRITICAL: Only ${videosLoaded}/${CRITICAL_VIDEOS.length} videos loaded!`);
-        console.error("YC Demo requires ALL videos to be available");
+        console.error(`❌ CRITICAL: Only ${totalLoaded}/${totalAssets} assets loaded!`);
+        console.error("YC Demo requires ALL videos AND styles to be ready");
         
-        // Still show progress but keep loading screen visible longer
         setTimeout(() => {
-          console.warn("⚠️ Proceeding with incomplete video set - NOT RECOMMENDED for YC demo");
+          console.warn("⚠️ Proceeding with incomplete loading - NOT RECOMMENDED for YC demo");
           setAssetsReady(true);
           setShowLoading(false);
         }, 2000);
