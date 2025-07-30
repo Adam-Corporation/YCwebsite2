@@ -1,0 +1,116 @@
+index-CBmR8fIS.js:3922 🚀 Starting asset loading for YC Demo...
+index-CBmR8fIS.js:3922 📝 Loading fonts...
+index-CBmR8fIS.js:3922 Loading font: /fonts/Boldonse-Regular.ttf
+index-CBmR8fIS.js:3922 ✓ Font loaded successfully: /fonts/Boldonse-Regular.ttf
+index-CBmR8fIS.js:3922 🎬 Loading videos...
+index-CBmR8fIS.js:3922 Loading video: /Videos/1-HelloWorldv2.mp4
+index-CBmR8fIS.js:3922 Loading video: /Videos/2-MemoryTestv1.mp4
+index-CBmR8fIS.js:3922 Loading video: /Videos/3-ChatGPTFinalVersion.mp4
+index-CBmR8fIS.js:3922 Loading video: /Videos/4-GoogleFormsTestv2.mp4
+index-CBmR8fIS.js:3922 Loading video: /Videos/5-SignInTest - Made with Clipchamp.mp4
+index-CBmR8fIS.js:3922 Loading video: /Videos/6-TweetTest - Made with Clipchamp.mp4
+index-CBmR8fIS.js:3922 Loading video: /Videos/7-GuiBasicTest - Made with Clipchamp.mp4
+index-CBmR8fIS.js:3922 Loading video: /Videos/8-TerminalBasicTest - Made with Clipchamp.mp4
+index-CBmR8fIS.js:3922  Retrying /Videos/1-HelloWorldv2.mp4, attempts left: 3
+c @ index-CBmR8fIS.js:3922
+index-CBmR8fIS.js:3922  Retrying /Videos/2-MemoryTestv1.mp4, attempts left: 3
+c @ index-CBmR8fIS.js:3922
+index-CBmR8fIS.js:3922  Retrying /Videos/3-ChatGPTFinalVersion.mp4, attempts left: 3
+c @ index-CBmR8fIS.js:3922
+index-CBmR8fIS.js:3922  Retrying /Videos/4-GoogleFormsTestv2.mp4, attempts left: 3
+c @ index-CBmR8fIS.js:3922
+index-CBmR8fIS.js:3922  Retrying /Videos/5-SignInTest - Made with Clipchamp.mp4, attempts left: 3
+c @ index-CBmR8fIS.js:3922
+index-CBmR8fIS.js:3922  Retrying /Videos/6-TweetTest - Made with Clipchamp.mp4, attempts left: 3
+c @ index-CBmR8fIS.js:3922
+index-CBmR8fIS.js:3922  Retrying /Videos/7-GuiBasicTest - Made with Clipchamp.mp4, attempts left: 3
+c @ index-CBmR8fIS.js:3922
+index-CBmR8fIS.js:3922  Retrying /Videos/8-TerminalBasicTest - Made with Clipchamp.mp4, attempts left: 3
+c @ index-CBmR8fIS.js:3922
+index-CBmR8fIS.js:3922 Loading video: /Videos/1-HelloWorldv2.mp4
+index-CBmR8fIS.js:3922 Loading video: /Videos/2-MemoryTestv1.mp4
+index-CBmR8fIS.js:3922 Loading video: /Videos/3-ChatGPTFinalVersion.mp4
+index-CBmR8fIS.js:3922 Loading video: /Videos/4-GoogleFormsTestv2.mp4
+index-CBmR8fIS.js:3922 Loading video: /Videos/5-SignInTest - Made with Clipchamp.mp4
+index-CBmR8fIS.js:3922 Loading video: /Videos/6-TweetTest - Made with Clipchamp.mp4
+index-CBmR8fIS.js:3922 Loading video: /Videos/7-GuiBasicTest - Made with Clipchamp.mp4
+index-CBmR8fIS.js:3922 Loading video: /Videos/8-TerminalBasicTest - Made with Clipchamp.mp4
+index-CBmR8fIS.js:3922  Retrying /Videos/1-HelloWorldv2.mp4, attempts left: 2
+c @ index-CBmR8fIS.js:3922
+index-CBmR8fIS.js:3922  Retrying /Videos/2-MemoryTestv1.mp4, attempts left: 2
+c @ index-CBmR8fIS.js:3922
+index-CBmR8fIS.js:3922  Retrying /Videos/3-ChatGPTFinalVersion.mp4, attempts left: 2
+c @ index-CBmR8fIS.js:3922
+index-CBmR8fIS.js:3922  Retrying /Videos/4-GoogleFormsTestv2.mp4, attempts left: 2
+c @ index-CBmR8fIS.js:3922
+index-CBmR8fIS.js:3922  Retrying /Videos/5-SignInTest - Made with Clipchamp.mp4, attempts left: 2
+c @ index-CBmR8fIS.js:3922
+index-CBmR8fIS.js:3922  Retrying /Videos/6-TweetTest - Made with Clipchamp.mp4, attempts left: 2
+c @ index-CBmR8fIS.js:3922
+index-CBmR8fIS.js:3922  Retrying /Videos/7-GuiBasicTest - Made with Clipchamp.mp4, attempts left: 2
+c @ index-CBmR8fIS.js:3922
+index-CBmR8fIS.js:3922  Retrying /Videos/8-TerminalBasicTest - Made with Clipchamp.mp4, attempts left: 2
+c @ index-CBmR8fIS.js:3922
+index-CBmR8fIS.js:3922 Loading video: /Videos/1-HelloWorldv2.mp4
+index-CBmR8fIS.js:3922 Loading video: /Videos/2-MemoryTestv1.mp4
+index-CBmR8fIS.js:3922 Loading video: /Videos/3-ChatGPTFinalVersion.mp4
+index-CBmR8fIS.js:3922 Loading video: /Videos/4-GoogleFormsTestv2.mp4
+index-CBmR8fIS.js:3922 Loading video: /Videos/5-SignInTest - Made with Clipchamp.mp4
+index-CBmR8fIS.js:3922 Loading video: /Videos/6-TweetTest - Made with Clipchamp.mp4
+index-CBmR8fIS.js:3922 Loading video: /Videos/7-GuiBasicTest - Made with Clipchamp.mp4
+index-CBmR8fIS.js:3922 Loading video: /Videos/8-TerminalBasicTest - Made with Clipchamp.mp4
+index-CBmR8fIS.js:3922  Retrying /Videos/1-HelloWorldv2.mp4, attempts left: 1
+c @ index-CBmR8fIS.js:3922
+index-CBmR8fIS.js:3922  Retrying /Videos/2-MemoryTestv1.mp4, attempts left: 1
+c @ index-CBmR8fIS.js:3922
+index-CBmR8fIS.js:3922  Retrying /Videos/3-ChatGPTFinalVersion.mp4, attempts left: 1
+c @ index-CBmR8fIS.js:3922
+index-CBmR8fIS.js:3922  Retrying /Videos/4-GoogleFormsTestv2.mp4, attempts left: 1
+c @ index-CBmR8fIS.js:3922
+index-CBmR8fIS.js:3922  Retrying /Videos/5-SignInTest - Made with Clipchamp.mp4, attempts left: 1
+c @ index-CBmR8fIS.js:3922
+index-CBmR8fIS.js:3922  Retrying /Videos/6-TweetTest - Made with Clipchamp.mp4, attempts left: 1
+c @ index-CBmR8fIS.js:3922
+index-CBmR8fIS.js:3922  Retrying /Videos/7-GuiBasicTest - Made with Clipchamp.mp4, attempts left: 1
+c @ index-CBmR8fIS.js:3922
+index-CBmR8fIS.js:3922  Retrying /Videos/8-TerminalBasicTest - Made with Clipchamp.mp4, attempts left: 1
+c @ index-CBmR8fIS.js:3922
+index-CBmR8fIS.js:3922 Loading video: /Videos/1-HelloWorldv2.mp4
+index-CBmR8fIS.js:3922 Loading video: /Videos/2-MemoryTestv1.mp4
+index-CBmR8fIS.js:3922 Loading video: /Videos/3-ChatGPTFinalVersion.mp4
+index-CBmR8fIS.js:3922 Loading video: /Videos/4-GoogleFormsTestv2.mp4
+index-CBmR8fIS.js:3922 Loading video: /Videos/5-SignInTest - Made with Clipchamp.mp4
+index-CBmR8fIS.js:3922 Loading video: /Videos/6-TweetTest - Made with Clipchamp.mp4
+index-CBmR8fIS.js:3922 Loading video: /Videos/7-GuiBasicTest - Made with Clipchamp.mp4
+index-CBmR8fIS.js:3922 Loading video: /Videos/8-TerminalBasicTest - Made with Clipchamp.mp4
+index-CBmR8fIS.js:3922  Failed to load video: /Videos/1-HelloWorldv2.mp4 Error: Video loading timeout: /Videos/1-HelloWorldv2.mp4
+    at index-CBmR8fIS.js:3922:58471
+c @ index-CBmR8fIS.js:3922
+index-CBmR8fIS.js:3922  Failed to load video: /Videos/2-MemoryTestv1.mp4 Error: Video loading timeout: /Videos/2-MemoryTestv1.mp4
+    at index-CBmR8fIS.js:3922:58471
+c @ index-CBmR8fIS.js:3922
+index-CBmR8fIS.js:3922  Failed to load video: /Videos/3-ChatGPTFinalVersion.mp4 Error: Video loading timeout: /Videos/3-ChatGPTFinalVersion.mp4
+    at index-CBmR8fIS.js:3922:58471
+c @ index-CBmR8fIS.js:3922
+index-CBmR8fIS.js:3922  Failed to load video: /Videos/4-GoogleFormsTestv2.mp4 Error: Video loading timeout: /Videos/4-GoogleFormsTestv2.mp4
+    at index-CBmR8fIS.js:3922:58471
+c @ index-CBmR8fIS.js:3922
+index-CBmR8fIS.js:3922  Failed to load video: /Videos/5-SignInTest - Made with Clipchamp.mp4 Error: Video loading timeout: /Videos/5-SignInTest - Made with Clipchamp.mp4
+    at index-CBmR8fIS.js:3922:58471
+c @ index-CBmR8fIS.js:3922
+index-CBmR8fIS.js:3922  Failed to load video: /Videos/6-TweetTest - Made with Clipchamp.mp4 Error: Video loading timeout: /Videos/6-TweetTest - Made with Clipchamp.mp4
+    at index-CBmR8fIS.js:3922:58471
+c @ index-CBmR8fIS.js:3922
+index-CBmR8fIS.js:3922  Failed to load video: /Videos/7-GuiBasicTest - Made with Clipchamp.mp4 Error: Video loading timeout: /Videos/7-GuiBasicTest - Made with Clipchamp.mp4
+    at index-CBmR8fIS.js:3922:58471
+c @ index-CBmR8fIS.js:3922
+index-CBmR8fIS.js:3922  Failed to load video: /Videos/8-TerminalBasicTest - Made with Clipchamp.mp4 Error: Video loading timeout: /Videos/8-TerminalBasicTest - Made with Clipchamp.mp4
+    at index-CBmR8fIS.js:3922:58471
+c @ index-CBmR8fIS.js:3922
+index-CBmR8fIS.js:3922 ✅ All assets loaded successfully!
+index-CBmR8fIS.js:3922 🎉 YC Demo ready to present!
+[NEW] Explain Console errors by using Copilot in Edge: click
+         
+         to explain an error. 
+        Learn more
+        Don't show again
