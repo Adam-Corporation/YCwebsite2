@@ -1,4 +1,4 @@
-// Auto-generated index of all embedded videos
+// ULTRA-COMPRESSED embedded videos for YC demo
 import * as video1 from './1-HelloWorldv2';
 import * as video2 from './2-MemoryTestv1';
 import * as video3 from './3-ChatGPTFinalVersion';
@@ -12,42 +12,50 @@ export const EMBEDDED_VIDEOS = [
   {
     path: "/Videos/1-HelloWorldv2.mp4",
     src: video1.videoData,
-    filename: video1.filename
+    filename: video1.filename,
+    compressed: true
   },
   {
     path: "/Videos/2-MemoryTestv1.mp4",
     src: video2.videoData,
-    filename: video2.filename
+    filename: video2.filename,
+    compressed: true
   },
   {
     path: "/Videos/3-ChatGPTFinalVersion.mp4",
     src: video3.videoData,
-    filename: video3.filename
+    filename: video3.filename,
+    compressed: true
   },
   {
     path: "/Videos/4-GoogleFormsTestv2.mp4",
     src: video4.videoData,
-    filename: video4.filename
+    filename: video4.filename,
+    compressed: true
   },
   {
     path: "/Videos/5-SignInTest - Made with Clipchamp.mp4",
     src: video5.videoData,
-    filename: video5.filename
+    filename: video5.filename,
+    compressed: true
   },
   {
     path: "/Videos/6-TweetTest - Made with Clipchamp.mp4",
     src: video6.videoData,
-    filename: video6.filename
+    filename: video6.filename,
+    compressed: true
   },
   {
     path: "/Videos/7-GuiBasicTest - Made with Clipchamp.mp4",
     src: video7.videoData,
-    filename: video7.filename
+    filename: video7.filename,
+    compressed: true
   },
   {
     path: "/Videos/8-TerminalBasicTest - Made with Clipchamp.mp4",
     src: video8.videoData,
-    filename: video8.filename
+    filename: video8.filename,
+    compressed: true
   }
 ];
 

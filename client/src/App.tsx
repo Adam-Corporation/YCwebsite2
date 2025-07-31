@@ -218,7 +218,7 @@ function App() {
   };
 
   const loadAssets = async () => {
-    console.log("🚀 Starting complete asset loading for YC Demo");
+    console.log("⚡ Starting ultra-fast asset loading for YC Demo");
     
     loadingStats.current = {
       totalBytes: 0,
@@ -267,11 +267,11 @@ function App() {
         console.log("✅ ALL embedded assets verified - YC Demo ready for presentation!");
         setAssetsReady(true);
         
-        // Show loading for 10 seconds to ensure page is perfectly ready
+        // Show loading for 3 seconds maximum for ultra-fast YC demo
         setTimeout(() => {
           setShowLoading(false);
-          console.log("🎉 Demo interface loaded after 10-second guarantee period!");
-        }, 10000);
+          console.log("⚡ Demo interface loaded in 3 seconds - ultra-fast YC demo!");
+        }, 3000);
       } else {
         console.error(`❌ CRITICAL: Only ${totalLoaded}/${totalAssets} assets loaded!`);
         console.error("YC Demo requires ALL embedded assets to be ready");
