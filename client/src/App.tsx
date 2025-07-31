@@ -1,12 +1,13 @@
-import { useState, useEffect, useRef } from "react";
-import { Switch, Route } from "wouter";
+import { useState, useEffect, useRef, lazy, Suspense } from "react";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./lib/queryClient";
 import { Toaster } from "@/components/ui/toaster";
-import Home from "@/pages/Home";
-import NotFound from "@/pages/not-found";
 import EntryScreen from "./components/entry-screen";
+import ProgressBar from "./components/ProgressBar";
 import "./styles/LoadingScreen.css";
+
+// Lazy load main routes for better performance
+const LazyRoutes = lazy(() => import('./components/LazyRoutes'));
 
 // Import truly embedded videos as base64 data URLs
 import { EMBEDDED_VIDEOS } from './embedded-videos';
@@ -69,10 +70,13 @@ const LoadingScreen = ({ progress = 0 }) => {
 
 function AppRouter() {
   return (
-    <Switch>
-      <Route path="/" component={Home} />
-      <Route component={NotFound} />
-    </Switch>
+    <Suspense fallback={
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-white text-xl">Loading routes...</div>
+      </div>
+    }>
+      <LazyRoutes />
+    </Suspense>
   );
 }
 
@@ -347,6 +351,7 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <ProgressBar isLoading={showLoading} progress={progress} />
       {entryMode ? (
         <EntryScreen toggleEntryMode={() => {
           setEntryMode(false);
