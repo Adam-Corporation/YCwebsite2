@@ -2,19 +2,13 @@ import React, { useState, useEffect, useRef } from 'react';
 import './Hero.css';
 
 const facts = [
-    "Have you ever seen a movie where a computer talks and expresses itself, performs tasks independently, has a memory like yours, and feels like a teammate more than a computer? This is Adam, a form of digital life",
-    
-    "Adam is a system that you install on your computer. Then, you simply command Adam to do something that a human can do on a computer. This way, the next generation will know computers as intelligent entities, not as machines",
-    
-    "Adam use the computer like human do, it can interact with graphical user interfaces so he can use apps or panels ,terminals, websites and so on to do what you command, it have complex memory that keep it in knowledge with what he need to remember while his doing a task, he can chain tasks and schedule what to do next",
-    
-    "Adam can schedule what he will do in a day,week, months and any time and so he can open itself when the time for a task that he scheduled  has fired , he do what he want when he want!",
-    
-    "The growing memory with its complexities is a big part of Adam, a computer that knows your best moments, you as a person before and after graduation, moments of hardship. Adam is more than a cold machine; It’s made to accompany you",
-    
-    "Command Adam to fill forms, gather data, talk with your CEO, respond to emails based on what he know, make cute app for your birthday based on what he know about you, book a trip for you to Hawai, schedule most important tasks in recomanded order, and run the long installation for a game, all of that while you make your coffee in the kitchen, and the next day do not even bother to write it just till him to do the same every day",
-    
-    "Your imagination is the only limit, just command Adam, try to explain something you want him to do, and he will try"
+    "Have you ever seen a movie where a computer talks and expresses itself, performs tasks independently, has a memory like yours, and feels more like a teammate than a computer? This is Adam, a form of digital life.",
+    "Adam is a system that you install on your computer. Then, you simply command Adam to do something that a human can do on a computer. This way, the next generation will know computers as intelligent entities, not as machines.",
+    "Adam uses the computer as humans do. It can interact with graphical user interfaces, so it can use apps, panels, terminals, websites, and so on to do what you command. It has a complex memory that keeps it knowledgeable about what it needs to remember while doing a task. It can also chain tasks and schedule what to do next.",
+    "Adam can schedule what he will do in a day, week, month, or any time, and so he can open itself when the time for a scheduled task has arrived. He does what he wants when he wants!",
+    "The growing memory, with its complexities, is a big part of Adam, a computer that knows your best moments, you as a person before and after graduation, and your moments of hardship. Adam is more than a cold machine; it’s made to accompany you.",
+    "Command Adam to fill out forms, gather data, talk with your CEO, respond to emails based on what he knows, make a cute app for your birthday based on what he knows about you, book a trip for you to Hawaii, schedule the most important tasks in a recommended order, and run the long installation for a game, all while you make your coffee in the kitchen. The next day, you don't even have to bother writing it; just tell him to do the same every day.",
+    "Your imagination is the only limit. Just command Adam, try to explain something you want him to do, and he will try."
 ];
 
 interface HeroProps {
